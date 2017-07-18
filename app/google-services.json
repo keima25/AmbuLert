@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "639455439691",
+    "firebase_url": "https://ambulife-463b7.firebaseio.com",
+    "project_id": "ambulife-463b7",
+    "storage_bucket": "ambulife-463b7.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:639455439691:android:015766004f66dcef",
+        "android_client_info": {
+          "package_name": "com.example.keima.ambulife"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "639455439691-j5on4fr4cdp28rgkbvpblj80f981c19t.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.keima.ambulife",
+            "certificate_hash": "66e7a302602466410e8d7b29772d2739c09311c1"
+          }
+        },
+        {
+          "client_id": "639455439691-di89vrnj2p14m1mhl798oc9j08b9jmaj.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDw16PtwtAlddYakwiADWtsnNPa91AgN6w"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "639455439691-di89vrnj2p14m1mhl798oc9j08b9jmaj.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
