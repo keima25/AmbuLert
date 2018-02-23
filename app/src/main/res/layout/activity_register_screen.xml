@@ -41,6 +41,8 @@
 
         <EditText
         android:id="@+id/registerFirstName"
+        android:hint="First name"
+        android:textSize="15sp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/registerText"
@@ -48,7 +50,7 @@
         android:layout_marginLeft="50dp"
         android:layout_marginRight="50dp"
         android:layout_marginStart="50dp"
-        android:hint="First name"
+
         android:inputType="textCapWords"
         android:textColor="@color/colorWhite"
         android:textColorHint="@color/colorHint" />
@@ -57,6 +59,7 @@
             android:id="@+id/registerLastName"
             android:layout_below="@+id/registerFirstName"
             android:hint="Last name"
+            android:textSize="15sp"
             android:textColorHint="@color/colorHint"
             android:textColor="@color/colorWhite"
             android:layout_marginStart="50dp"
@@ -71,6 +74,7 @@
             android:id="@+id/registerUsername"
             android:layout_below="@+id/registerLastName"
             android:hint="Email(Username)"
+            android:textSize="15sp"
             android:textColorHint="@color/colorHint"
             android:textColor="@color/colorWhite"
             android:layout_marginStart="50dp"
@@ -85,6 +89,7 @@
             android:id="@+id/registerPassword"
             android:layout_below="@+id/registerUsername"
             android:hint="Password"
+            android:textSize="15sp"
             android:textColorHint="@color/colorHint"
             android:textColor="@color/colorWhite"
             android:layout_marginStart="50dp"
@@ -99,6 +104,7 @@
             android:id="@+id/registerCPassword"
             android:layout_below="@+id/registerPassword"
             android:hint="Confirm Password"
+            android:textSize="15sp"
             android:textColorHint="@color/colorHint"
             android:textColor="@color/colorWhite"
             android:layout_marginStart="50dp"
