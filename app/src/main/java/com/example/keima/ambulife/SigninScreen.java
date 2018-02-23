@@ -5,9 +5,11 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -30,7 +32,7 @@ public class SigninScreen extends AppCompatActivity {
 //    private FirebaseUser currentUser;
 
     // Declare Views here
-    TextView signinText, signinText2;
+    TextView signinText, signinText2, signinTitleText;
     EditText signin_username, signin_password;
     Button gotoRegister, btnSignin;
     ProgressBar progressBar;
@@ -47,6 +49,7 @@ public class SigninScreen extends AppCompatActivity {
         // Assign views by id
         signinText = (TextView) findViewById(R.id.signinText);
         signinText2 = (TextView) findViewById(R.id.signinText2);
+        signinTitleText = (TextView) findViewById(R.id.signinLogoText);
         signin_username = (EditText) findViewById(R.id.signinUsername);
         signin_password = (EditText) findViewById(R.id.signinPassword);
         btnSignin = (Button) findViewById(R.id.btnSignin);
@@ -153,9 +156,14 @@ public class SigninScreen extends AppCompatActivity {
         String email = signin_username.getText().toString().trim();
         String password = signin_password.getText().toString().trim();
 
-        // Check to make sure the fields are not empty
+        // Check  the fields if filled in correctly
         if (email.isEmpty()) {
             signin_username.setError("Please enter your username");
+            signin_username.requestFocus();
+            return;
+        }
+        if(!Patterns.EMAIL_ADDRESS.matcher(email).matches()){
+            signin_username.setError("Please enter a valid email");
             signin_username.requestFocus();
             return;
         }
