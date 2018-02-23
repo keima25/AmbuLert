@@ -3,7 +3,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/AmbuLert.iml" filepath="$PROJECT_DIR$/AmbuLert.iml" />
-      <module fileurl="file://C:\Users\Steven\Documents\Android Studio Projects\AmbuLert-master\AmbuLife.iml" filepath="C:\Users\Steven\Documents\Android Studio Projects\AmbuLert-master\AmbuLife.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>

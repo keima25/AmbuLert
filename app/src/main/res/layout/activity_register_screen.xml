@@ -109,9 +109,25 @@
             android:layout_height="wrap_content"
             android:inputType="textPassword"/>
 
+        <EditText
+            android:id="@+id/registerPhone"
+            android:layout_below="@+id/registerCPassword"
+            android:hint="Mobile Number e.g 09123456789"
+            android:textSize="15sp"
+            android:textColorHint="@color/colorHint"
+            android:textColor="@color/colorWhite"
+            android:layout_marginStart="50dp"
+            android:layout_marginEnd="50dp"
+            android:layout_marginLeft="50dp"
+            android:layout_marginRight="50dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:maxLength="11" />
+
         <RadioButton
             android:id="@+id/registerTermsRadioBtn"
-            android:layout_below="@+id/registerCPassword"
+            android:layout_below="@+id/registerPhone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
