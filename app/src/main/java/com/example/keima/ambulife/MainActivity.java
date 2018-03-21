@@ -16,7 +16,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         //Map Button
-        changeMap = (Button)findViewById(R.id.GoMap);
+        changeMap = (Button) findViewById(R.id.GoMap);
         changeMap.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

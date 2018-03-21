@@ -9,7 +9,6 @@ import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -20,10 +19,7 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-import org.w3c.dom.Text;
-
 import static android.view.View.GONE;
-import static android.view.View.VISIBLE;
 
 public class SigninScreen extends AppCompatActivity {
 
@@ -36,6 +32,9 @@ public class SigninScreen extends AppCompatActivity {
     EditText signin_username, signin_password;
     Button gotoRegister, btnSignin;
     ProgressBar progressBar;
+
+    // Used check if first time login. 0(true) 1(false)
+//    int firstDeviceLogin = 0;
 
 
         @Override
@@ -82,8 +81,18 @@ public class SigninScreen extends AppCompatActivity {
         super.onStart();
         // Check if the user is currently signed in or not null. Then update UI
         FirebaseUser user = mAuth.getCurrentUser();
-        if(user!= null){
+        if(user != null){
             userExists(user);
+//            if(firstDeviceLogin == 0){
+//                firstDeviceLogin = 1;
+//                Intent intent = new Intent(SigninScreen.this, MapInterface.class);
+//                startActivity(intent);
+//                finish();
+//                return;
+//            }else{
+//                userExists(user);
+//                return;
+//            }
         }
     }
 
@@ -101,7 +110,7 @@ public class SigninScreen extends AppCompatActivity {
         btnSignin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(SigninScreen.this, MapsActivity.class);
+                Intent intent = new Intent(SigninScreen.this, MapInterface.class);
                 startActivity(intent);
                 finish();
             }

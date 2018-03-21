@@ -21,22 +21,31 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".MainActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent" />
-            </intent-filter>
-        </activity>
-        <activity android:name=".RegisterScreen" android:screenOrientation="portrait">
+            <!-- <intent-filter> -->
+            <!-- <action android:name="android.intent.action.MAIN" /> -->
 
+
+            <!-- <category android:name="android.intent" /> -->
+            <!-- </intent-filter> -->
         </activity>
-        <activity android:name=".SigninScreen" android:screenOrientation="portrait">
+        <activity
+            android:name=".RegisterScreen"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".SigninScreen"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".MapsActivity"
+            android:label="@string/title_activity_maps"
+            android:screenOrientation="portrait"></activity>
+
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -49,11 +58,7 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
 
-        <activity
-            android:name=".MapsActivity"
-            android:label="@string/title_activity_maps" />
-
-
+        <activity android:name=".MapInterface"></activity>
     </application>
 
 </manifest>
