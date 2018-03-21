@@ -1,5 +1,6 @@
 package com.example.keima.ambulife;
 
+import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -12,7 +13,7 @@ public class MapInterface extends AppCompatActivity {
     private ActionBarDrawerToggle mToggle;
     private android.support.v7.widget.Toolbar appbar;
 
-//    NavigationView nav_view;
+    NavigationView nav_view;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
