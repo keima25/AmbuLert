@@ -110,7 +110,7 @@ public class SigninScreen extends AppCompatActivity {
         btnSignin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(SigninScreen.this, MapsActivity.class);
+                Intent intent = new Intent(SigninScreen.this, MapInterface.class);
                 startActivity(intent);
                 finish();
             }
