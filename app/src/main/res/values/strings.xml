@@ -3,4 +3,12 @@
     <string name="title_activity_maps">Map</string>
     <string name="open_nav">Open</string>
     <string name="close_nav">Close</string>
+    <string-array name="profileList">
+        <item>Name</item>
+        <item>Gender</item>
+        <item>Age</item>
+        <item>House Address</item>
+        <item>Tel. Number</item>
+        <item>Mobile Number</item>
+    </string-array>
 </resources>

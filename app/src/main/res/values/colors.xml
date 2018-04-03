@@ -7,4 +7,5 @@
     <color name="colorButtonMainRed">#E54343</color>
     <color name="colorWhite">#FFF</color>
     <color name="colorHint">#c5c5c5</color>
+    <color name="colorBlack">#000</color>
 </resources>
