@@ -28,7 +28,7 @@ public class MapInterface extends AppCompatActivity implements NavigationView.On
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mToggle;
     private android.support.v7.widget.Toolbar appbar;
-    FloatingActionButton fab;
+    public static FloatingActionButton fab;
     ProgressBar progressBar;
     NavigationView nav_view;
 

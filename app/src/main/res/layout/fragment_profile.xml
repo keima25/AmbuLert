@@ -30,9 +30,9 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginBottom="20dp"
-            android:layout_marginTop="10dp"
             android:scaleX="2"
             android:scaleY="2"
+            android:elevation="@null"
             android:src="@mipmap/profile_icon" />
 
         <TextView
@@ -47,6 +47,15 @@
             android:textColor="@color/colorWhite"
             android:textStyle="bold" />
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Profile Information"
+            android:layout_marginTop="10dp"
+            android:textAlignment="center"
+            android:textColor="@color/colorWhite"
+            android:textSize="17sp" />
+
     </LinearLayout>
 
     <LinearLayout
@@ -55,23 +64,149 @@
         android:layout_gravity="center"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
-        android:layout_marginTop="155dp"
+        android:layout_marginTop="200dp"
+        android:background="@color/colorWhite"
         android:orientation="vertical">
 
-        <TextView
+        <android.support.v7.widget.CardView
+            android:id="@+id/name_card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/colorWhite"
-            android:text="Profile Information"
-            android:textAlignment="center"
-            android:textColor="@color/colorBlack"
-            android:textSize="18sp" />
+            app:cardCornerRadius="3dp"
+            app:cardElevation="10dp"
+            android:layout_marginBottom="2dp"
+            android:minHeight="60dp"
+            android:background="@color/colorWhite">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Name"
+                android:textSize="12sp"
+                android:textAllCaps="true"
+                android:padding="5dp"/>
+            <TextView
+                android:id="@+id/profile_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="25dp"
+                android:padding="5dp"
+                android:textSize="15sp"
+                android:textColor="@color/colorPrimary"
+                android:layout_marginLeft="5dp"
+                android:text="Sample Name"/>
+        </android.support.v7.widget.CardView>
 
-        <ListView
+        <android.support.v7.widget.CardView
+            android:id="@+id/homeAddress_card"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@color/colorWhite"
-            android:entries="@array/profileList"></ListView>
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="3dp"
+            app:cardElevation="10dp"
+            android:layout_marginBottom="2dp"
+            android:minHeight="60dp"
+            android:background="@color/colorWhite">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Home Address"
+                android:textSize="12sp"
+                android:textAllCaps="true"
+                android:padding="5dp"/>
+            <TextView
+                android:id="@+id/profile_homeAddress"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="25dp"
+                android:padding="5dp"
+                android:textSize="15sp"
+                android:textColor="@color/colorPrimary"
+                android:layout_marginLeft="5dp"
+                android:text="123 Kalabasa St. Davao City"/>
+        </android.support.v7.widget.CardView>
+
+        <android.support.v7.widget.CardView
+            android:id="@+id/age_card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="3dp"
+            app:cardElevation="10dp"
+            android:layout_marginBottom="2dp"
+            android:minHeight="60dp"
+            android:background="@color/colorWhite">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Age"
+                android:textSize="12sp"
+                android:textAllCaps="true"
+                android:padding="5dp"/>
+            <TextView
+                android:id="@+id/profile_age"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="25dp"
+                android:padding="5dp"
+                android:textSize="15sp"
+                android:textColor="@color/colorPrimary"
+                android:layout_marginLeft="5dp"
+                android:text="20 years old"/>
+        </android.support.v7.widget.CardView>
+
+        <android.support.v7.widget.CardView
+            android:id="@+id/gender_card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="3dp"
+            app:cardElevation="10dp"
+            android:layout_marginBottom="2dp"
+            android:minHeight="60dp"
+            android:background="@color/colorWhite">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Gender"
+                android:textSize="12sp"
+                android:textAllCaps="true"
+                android:padding="5dp"/>
+            <TextView
+                android:id="@+id/profile_gender"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="25dp"
+                android:padding="5dp"
+                android:textSize="15sp"
+                android:textColor="@color/colorPrimary"
+                android:layout_marginLeft="5dp"
+                android:text="Male"/>
+        </android.support.v7.widget.CardView>
+        <android.support.v7.widget.CardView
+            android:id="@+id/profile_phoneNum_card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="3dp"
+            app:cardElevation="10dp"
+            android:layout_marginBottom="2dp"
+            android:minHeight="60dp"
+            android:background="@color/colorWhite">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Tel./Mobile Number"
+                android:textSize="12sp"
+                android:textAllCaps="true"
+                android:padding="5dp"/>
+            <TextView
+                android:id="@+id/profile_phoneNum"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="25dp"
+                android:padding="5dp"
+                android:textSize="15sp"
+                android:textColor="@color/colorPrimary"
+                android:layout_marginLeft="5dp"
+                android:text="0822336923"/>
+        </android.support.v7.widget.CardView>
+
 
     </LinearLayout>
 

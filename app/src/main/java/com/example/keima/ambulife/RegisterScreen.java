@@ -101,7 +101,7 @@ public class RegisterScreen extends AppCompatActivity{
         final String firstname = editText_regFirstname.getText().toString().trim();
         final String lastname = editText_regLastname.getText().toString().trim();
         final String username = editText_regUsername.getText().toString().trim();
-        String password = editText_regPassword.getText().toString().trim();
+        final String password = editText_regPassword.getText().toString().trim();
         String confirm_password = editText_regCPassword.getText().toString().trim();
         final String phone = editText_Phone.getText().toString().trim();
 
@@ -170,8 +170,10 @@ public class RegisterScreen extends AppCompatActivity{
             public void onComplete(@NonNull Task<AuthResult> task) {
                 // When task is complete
                 if (task.isSuccessful()) {
-                    // If the sign in is successful,
-                    String id = databaseRegisterUser.push().getKey();
+                    // If the creation in is successful,
+                    FirebaseUser newUser = task.getResult().getUser();
+
+                    String id = newUser.getUid();
 
                     Users users = new Users(id, username, firstname, lastname, phone);
 
