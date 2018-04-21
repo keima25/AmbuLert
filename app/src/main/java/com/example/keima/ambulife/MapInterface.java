@@ -15,15 +15,20 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.karan.churi.PermissionManager.PermissionManager;
+
+import java.util.ArrayList;
 
 public class MapInterface extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
+    private PermissionManager permissionManager;
     private FirebaseAuth mAuth;
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mToggle;
@@ -36,6 +41,10 @@ public class MapInterface extends AppCompatActivity implements NavigationView.On
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map_interface);
+
+        // Initialize Permission Manager
+        permissionManager = new PermissionManager() {};
+        permissionManager.checkAndRequestPermissions(this);
 
         //Firebase Objects Declarations
         mAuth = FirebaseAuth.getInstance();
@@ -86,6 +95,24 @@ public class MapInterface extends AppCompatActivity implements NavigationView.On
             ft.replace(R.id.screen_area, fragment);
             ft.commit();
         }
+
+
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        permissionManager.checkResult(requestCode, permissions, grantResults);
+
+        // Store permission results to String variable just to check
+        ArrayList<String> granted = permissionManager.getStatus().get(0).granted;
+        ArrayList<String> denied = permissionManager.getStatus().get(0).denied;
+
+        // Permission Log
+        for (String item:granted)
+            Log.e("Permission Granted: ", item);
+
+        for (String item:denied)
+            Log.e("Permission Denied: ", item);
 
 
     }

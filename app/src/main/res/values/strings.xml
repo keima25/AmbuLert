@@ -11,4 +11,5 @@
         <item>Tel. Number</item>
         <item>Mobile Number</item>
     </string-array>
+    <string name="title_activity_map">Map</string>
 </resources>
