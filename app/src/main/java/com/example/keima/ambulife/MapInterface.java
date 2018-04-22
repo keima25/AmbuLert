@@ -1,18 +1,24 @@
 package com.example.keima.ambulife;
 
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.internal.NavigationMenu;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -34,6 +40,7 @@ public class MapInterface extends AppCompatActivity implements NavigationView.On
     private ActionBarDrawerToggle mToggle;
     private android.support.v7.widget.Toolbar appbar;
     public static FloatingActionButton fab;
+    private final static String EMERGENCY_NUMBER = "1234567890";
     ProgressBar progressBar;
     NavigationView nav_view;
 
@@ -43,7 +50,8 @@ public class MapInterface extends AppCompatActivity implements NavigationView.On
         setContentView(R.layout.activity_map_interface);
 
         // Initialize Permission Manager
-        permissionManager = new PermissionManager() {};
+        permissionManager = new PermissionManager() {
+        };
         permissionManager.checkAndRequestPermissions(this);
 
         //Firebase Objects Declarations
@@ -55,7 +63,7 @@ public class MapInterface extends AppCompatActivity implements NavigationView.On
 
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
 
-        //Floating action button id
+        //Floating action button id. This serves as the call button
         fab = (FloatingActionButton) findViewById(R.id.fab);
 
         //Get drawerLayout ID
@@ -64,8 +72,6 @@ public class MapInterface extends AppCompatActivity implements NavigationView.On
 
         //Get NaviagationView id
         nav_view = (NavigationView) findViewById(R.id.nav_view);
-
-
 
 
         // Assign drawer listener
@@ -81,14 +87,14 @@ public class MapInterface extends AppCompatActivity implements NavigationView.On
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getApplicationContext(), "You have pressed the button", Toast.LENGTH_SHORT).show();
+                call(EMERGENCY_NUMBER);
             }
         });
 
         // Map Fragment on Start
         Fragment fragment = null;
         fragment = new MapsActivity();
-        if(fragment != null) {
+        if (fragment != null) {
             FragmentManager fragmentManager = getSupportFragmentManager();
             FragmentTransaction ft = fragmentManager.beginTransaction();
 
@@ -108,10 +114,10 @@ public class MapInterface extends AppCompatActivity implements NavigationView.On
         ArrayList<String> denied = permissionManager.getStatus().get(0).denied;
 
         // Permission Log
-        for (String item:granted)
+        for (String item : granted)
             Log.e("Permission Granted: ", item);
 
-        for (String item:denied)
+        for (String item : denied)
             Log.e("Permission Denied: ", item);
 
 
@@ -119,7 +125,7 @@ public class MapInterface extends AppCompatActivity implements NavigationView.On
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if(mToggle.onOptionsItemSelected(item)){
+        if (mToggle.onOptionsItemSelected(item)) {
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -132,21 +138,16 @@ public class MapInterface extends AppCompatActivity implements NavigationView.On
 
         int menuId = item.getItemId();
 
-        if(menuId == R.id.nav_profile){
+        if (menuId == R.id.nav_profile) {
             Toast.makeText(this.getApplicationContext(), "You clicked Profile", Toast.LENGTH_SHORT).show();
             fragment = new ProfileFragment();
-        }
-
-        else if(menuId == R.id.nav_settings){
+        } else if (menuId == R.id.nav_settings) {
             Toast.makeText(this.getApplicationContext(), "You clicked Settings", Toast.LENGTH_SHORT).show();
-        }
-
-
-        else if(menuId == R.id.nav_logout){
+        } else if (menuId == R.id.nav_logout) {
             Toast.makeText(this.getApplicationContext(), "You clicked Logout", Toast.LENGTH_SHORT).show();
         }
 
-        if(fragment != null) {
+        if (fragment != null) {
             FragmentManager fragmentManager = getSupportFragmentManager();
             FragmentTransaction ft = fragmentManager.beginTransaction();
 
@@ -158,11 +159,40 @@ public class MapInterface extends AppCompatActivity implements NavigationView.On
         return false;
     }
 
+    public void call(String number) {
+        final String callnumber = number;
+
+        // Initialize dialog
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Your are about to call 911. Please note that your location will be automatically detected.")
+                .setCancelable(false)
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    public void onClick(final DialogInterface dialog, final int id) {
+                        dialog.cancel();
+                    }
+                })
+                .setPositiveButton("Proceed", new DialogInterface.OnClickListener() {
+                    public void onClick(final DialogInterface dialog, final int id) {
+                    // Create a new Intent for the call service
+                        Intent call_intent = new Intent(Intent.ACTION_CALL);
+                        call_intent.setData(Uri.parse("tel:" + callnumber));
+
+                        if (ActivityCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+                            return;
+                        }
+                        startActivity(call_intent);
+                    }
+                });
+
+        // Show Alert Dialog
+        final AlertDialog callAlertDialog = builder.create();
+        callAlertDialog.show();
+
+    }
+
     // Sign out user
     public void signOutUser(){
-
 //        progressBar.setVisibility(View.VISIBLE);
-
         final Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             @Override

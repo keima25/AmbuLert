@@ -101,8 +101,8 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback {
 
         // Initialize the map
         initMap();
-        dialog = ProgressDialog.show(getContext(), "",
-                "Getting your location. Please wait...", true);
+        dialog = ProgressDialog.show(getContext(), "Detecting Location",
+                "Please wait while the app is getting your location", true);
 
         // Checks if the location permissions are not granted
         if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -261,6 +261,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback {
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        mMap.getUiSettings().setMapToolbarEnabled(false);
         Toast.makeText(getActivity(), "Map is Ready", Toast.LENGTH_LONG).show();
         Log.d(TAG, "onMapReady: map is ready");
     }
@@ -270,48 +271,6 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback {
         FragmentTransaction ft = getFragmentManager().beginTransaction();
         ft.detach(this).attach(this).commit();
     }
-
-//    public void getLocationPermission(){
-//        Log.d(TAG, "getLocationPermission: getting location permissions");
-//        String[] permimissions = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};
-//
-//        if (ContextCompat.checkSelfPermission(getActivity(), FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
-//            if (ContextCompat.checkSelfPermission(getActivity(), COURSE_LOCATION) == PackageManager.PERMISSION_GRANTED){
-//                mLocationPermissionsGranted = true;
-//                initMap();
-//            }else{
-//                ActivityCompat.requestPermissions(getActivity(), permimissions, LOCATION_PERMISSION_REQUEST_CODE );
-//            }
-//
-//        }else{
-//            ActivityCompat.requestPermissions(getActivity(), permimissions, LOCATION_PERMISSION_REQUEST_CODE );
-//        }
-//    }
-
-
-//    @Override
-//    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-//        Log.d(TAG,"onRequestPermissionsResult: called");
-//        mLocationPermissionsGranted = false;
-//
-//        switch (requestCode){
-//            case LOCATION_PERMISSION_REQUEST_CODE:{
-//                if (grantResults.length > 0){
-//                    for (int i = 0; i<grantResults.length;i++){
-//                        if (grantResults[i] != PackageManager.PERMISSION_GRANTED){
-//                            mLocationPermissionsGranted = false;
-//                            Log.d(TAG,"onRequestPermissionsResult: permission failed");
-//                            return;
-//                        }
-//                    }
-//                    Log.d(TAG,"onRequestPermissionsResult: permission granted");
-//                    mLocationPermissionsGranted = true;
-//
-//                    initMap();
-//                }
-//            }
-//        }
-//    }
 
 
 }
