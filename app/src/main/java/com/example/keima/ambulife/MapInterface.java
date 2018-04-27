@@ -27,9 +27,19 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.karan.churi.PermissionManager.PermissionManager;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 
 public class MapInterface extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -139,12 +149,12 @@ public class MapInterface extends AppCompatActivity implements NavigationView.On
         int menuId = item.getItemId();
 
         if (menuId == R.id.nav_profile) {
-            Toast.makeText(this.getApplicationContext(), "You clicked Profile", Toast.LENGTH_SHORT).show();
-            fragment = new ProfileFragment();
+            Intent i = new Intent(this, MyProfile.class);
+            startActivity(i);
         } else if (menuId == R.id.nav_settings) {
-            Toast.makeText(this.getApplicationContext(), "You clicked Settings", Toast.LENGTH_SHORT).show();
+//            Toast.makeText(this.getApplicationContext(), "You clicked Settings", Toast.LENGTH_SHORT).show();
         } else if (menuId == R.id.nav_logout) {
-            Toast.makeText(this.getApplicationContext(), "You clicked Logout", Toast.LENGTH_SHORT).show();
+//            Toast.makeText(this.getApplicationContext(), "You clicked Logout", Toast.LENGTH_SHORT).show();
         }
 
         if (fragment != null) {
@@ -180,6 +190,7 @@ public class MapInterface extends AppCompatActivity implements NavigationView.On
                         if (ActivityCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
                             return;
                         }
+                        startCallSession();
                         startActivity(call_intent);
                     }
                 });
@@ -187,6 +198,62 @@ public class MapInterface extends AppCompatActivity implements NavigationView.On
         // Show Alert Dialog
         final AlertDialog callAlertDialog = builder.create();
         callAlertDialog.show();
+
+    }
+
+    private void startCallSession(){
+
+        final FirebaseUser currentUser = mAuth.getCurrentUser();
+        DatabaseReference profile = FirebaseDatabase.getInstance().getReference("profiles").child(currentUser.getUid());
+
+        // Get current timestamp
+        Long tsLong = System.currentTimeMillis()/1000;
+        final String timestamp = tsLong.toString();
+
+        // Get current location from database
+        profile.child("last_known_location").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                final LatLng latLng = new LatLng(
+                        dataSnapshot.child("latitude").getValue(Long.class),
+                        dataSnapshot.child("longitude").getValue(Long.class)
+                );
+
+                DatabaseReference dbref = FirebaseDatabase.getInstance().getReference("ongoing_calls").child(currentUser.getUid());
+
+                dbref.child("call_last_known_location").setValue(latLng).addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        Log.i("On_Call:", "Saved Location"+latLng);
+                    }
+                });
+
+                dbref.child("caller_id").setValue(currentUser.getUid()).addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        Log.i("On_Call:", "Saved Caller Id");
+                    }
+                });
+
+                dbref.child("call_timestamp").setValue(timestamp).addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        Log.i("On_Call", "Saved timestamp");
+                    }
+                });
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+
+        });
+
+
+//        ongoing_calls.child("location").setValue(coordinates);
+//        ongoing_calls.child("timestamp").setValue(timestamp);
+//        ongoing_calls.child("address").setValue(address);
 
     }
 
@@ -207,5 +274,9 @@ public class MapInterface extends AppCompatActivity implements NavigationView.On
                 startActivity(intent);
             }
         }, 5000);
+    }
+
+    public void showCallButton(){
+        fab.show();
     }
 }

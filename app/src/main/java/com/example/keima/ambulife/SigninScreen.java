@@ -83,16 +83,6 @@ public class SigninScreen extends AppCompatActivity {
         FirebaseUser user = mAuth.getCurrentUser();
         if(user != null){
             userExists(user);
-//            if(firstDeviceLogin == 0){
-//                firstDeviceLogin = 1;
-//                Intent intent = new Intent(SigninScreen.this, MapInterface.class);
-//                startActivity(intent);
-//                finish();
-//                return;
-//            }else{
-//                userExists(user);
-//                return;
-//            }
         }
     }
 

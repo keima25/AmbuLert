@@ -2,11 +2,10 @@ package com.example.keima.ambulife;
 
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.icu.lang.UCharacter;
-import android.media.Image;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -15,9 +14,15 @@ import android.support.v7.widget.CardView;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
+import android.support.design.widget.NavigationView;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -27,22 +32,13 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.MutableData;
-import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 
-import java.util.ArrayList;
-
-/**
- * Created by Steven on 02/04/2018.
- */
-
-public class ProfileFragment extends Fragment {
+public class MyProfile extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private ImageView closeBtn, profileImageView, imageView_edit_name, imageView_edit_address, imageView_edit_age,
             imageView_edit_gender, imageView_edit_mobileNum;
@@ -54,75 +50,61 @@ public class ProfileFragment extends Fragment {
     AlertDialog editDialog;
     EditText editText, editText2;
 
-    @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_profile, null);
-
-    }
-
-
-    // Do everything
-    @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_my_profile);
+//        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+//        setSupportActionBar(toolbar);
 
         // Instantiate Firebase Auth
         mAuth = FirebaseAuth.getInstance();
 
+        // Get current user
+        currentUser = mAuth.getCurrentUser();
+
         MapInterface.fab.setVisibility(View.GONE);
 
         // View Declarations
-        closeBtn = (ImageView) view.findViewById(R.id.closeButton);
+        closeBtn = findViewById(R.id.closeButton);
 
-        profileImageView = (ImageView) view.findViewById(R.id.profile_imageView);
-        emailView = (TextView) view.findViewById(R.id.profile_emailAddress);
-        nameView = (TextView) view.findViewById(R.id.profile_name);
-        homeaddressView = (TextView) view.findViewById(R.id.profile_homeAddress);
-        ageView = (TextView) view.findViewById(R.id.profile_age);
-        genderView = (TextView) view.findViewById(R.id.profile_gender);
-        phoneView = (TextView) view.findViewById(R.id.profile_phoneNum);
+        profileImageView = findViewById(R.id.profile_imageView);
+        emailView = findViewById(R.id.profile_emailAddress);
+        nameView = findViewById(R.id.profile_name);
+        homeaddressView = findViewById(R.id.profile_homeAddress);
+        ageView = findViewById(R.id.profile_age);
+        genderView = findViewById(R.id.profile_gender);
+        phoneView = findViewById(R.id.profile_phoneNum);
 
-        nameView_card = (CardView) view.findViewById(R.id.name_card);
-        homeaddressView_card = (CardView) view.findViewById(R.id.homeAddress_card);
-        ageView_card = (CardView) view.findViewById(R.id.age_card);
-        genderView_card = (CardView) view.findViewById(R.id.gender_card);
-        phoneView_card = (CardView) view.findViewById(R.id.profile_phoneNum_card);
+        nameView_card = findViewById(R.id.name_card);
+        homeaddressView_card = findViewById(R.id.homeAddress_card);
+        ageView_card = findViewById(R.id.age_card);
+        genderView_card = findViewById(R.id.gender_card);
+        phoneView_card = findViewById(R.id.profile_phoneNum_card);
 
-        imageView_edit_name = (ImageView) view.findViewById(R.id.imageView_edit_name);
-        imageView_edit_address = (ImageView) view.findViewById(R.id.imageView_edit_address);
-        imageView_edit_age = (ImageView) view.findViewById(R.id.imageView_edit_age);
-        imageView_edit_gender = (ImageView) view.findViewById(R.id.imageView_edit_gender);
-        imageView_edit_mobileNum = (ImageView) view.findViewById(R.id.imageView_edit_mobileNum);
+        imageView_edit_name = findViewById(R.id.imageView_edit_name);
+        imageView_edit_address = findViewById(R.id.imageView_edit_address);
+        imageView_edit_age = findViewById(R.id.imageView_edit_age);
+        imageView_edit_gender = findViewById(R.id.imageView_edit_gender);
+        imageView_edit_mobileNum = findViewById(R.id.imageView_edit_mobileNum);
 
-        //When close button is clicked
-        closeBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.addDrawerListener(toggle);
+        toggle.syncState();
 
-                // Change back to MapsActivity Fragment
-                Fragment fragment = null;
-                fragment = new MapsActivity();
-                if (fragment != null) {
-                    FragmentManager fragmentManager = getFragmentManager();
-                    FragmentTransaction ft = fragmentManager.beginTransaction();
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
 
-                    MapInterface.fab.setVisibility(View.VISIBLE);
-                    ft.replace(R.id.screen_area, fragment);
-                    ft.commit();
-                }
-            }
-        });
 
         displayProfile();
 
-
         // EDIT PROFILE FUNCTIONS
-
         profileImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(getActivity(), CameraActivity.class);
+                Intent intent = new Intent(getApplicationContext(), CameraActivity.class);
                 startActivity(intent);
             }
         });
@@ -130,9 +112,9 @@ public class ProfileFragment extends Fragment {
         imageView_edit_name.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                editDialog = new AlertDialog.Builder(getActivity()).create();
-                editText = new EditText(getActivity());
-                editText2 = new EditText(getActivity());
+                editDialog = new AlertDialog.Builder(MyProfile.this).create();
+                editText = new EditText(MyProfile.this);
+                editText2 = new EditText(MyProfile.this);
 
                 // Get the database reference for the field to update
                 final DatabaseReference firstnameRef = FirebaseDatabase.getInstance()
@@ -151,7 +133,7 @@ public class ProfileFragment extends Fragment {
                             editText.setError("Please enter a value");
                         }else{
                             updateProfile(firstnameRef, editText.getText().toString().trim());
-                            refreshFragment();
+                            refreshActivity();
                         }
                     }
                 });
@@ -182,8 +164,8 @@ public class ProfileFragment extends Fragment {
         imageView_edit_gender.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                editDialog = new AlertDialog.Builder(getActivity()).create();
-                editText = new EditText(getActivity());
+                editDialog = new AlertDialog.Builder(MyProfile.this).create();
+                editText = new EditText(MyProfile.this);
 
                 // Get the database reference for the field to update
                 final DatabaseReference genderRef = FirebaseDatabase.getInstance()
@@ -200,7 +182,7 @@ public class ProfileFragment extends Fragment {
                             editText.setError("Please enter a value");
                         }else{
                             updateProfile(genderRef, editText.getText().toString().trim());
-                            refreshFragment();
+                            refreshActivity();
                         }
                     }
                 });
@@ -231,8 +213,8 @@ public class ProfileFragment extends Fragment {
         imageView_edit_age.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                editDialog = new AlertDialog.Builder(getActivity()).create();
-                editText = new EditText(getActivity());
+                editDialog = new AlertDialog.Builder(MyProfile.this).create();
+                editText = new EditText(MyProfile.this);
 
                 // Get the database reference for the field to update
                 final DatabaseReference ageRef = FirebaseDatabase.getInstance()
@@ -249,7 +231,7 @@ public class ProfileFragment extends Fragment {
                             editText.setError("Please enter a value");
                         }else{
                             updateProfile(ageRef, editText.getText().toString().trim());
-                            refreshFragment();
+                            refreshActivity();
                         }
                     }
                 });
@@ -281,8 +263,8 @@ public class ProfileFragment extends Fragment {
         imageView_edit_address.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                editDialog = new AlertDialog.Builder(getActivity()).create();
-                editText = new EditText(getActivity());
+                editDialog = new AlertDialog.Builder(MyProfile.this).create();
+                editText = new EditText(MyProfile.this);
 
                 // Get the database reference for the field to update
                 final DatabaseReference homeAddressRef = FirebaseDatabase.getInstance()
@@ -299,7 +281,7 @@ public class ProfileFragment extends Fragment {
                             editText.setError("Please enter a value");
                         }else{
                             updateProfile(homeAddressRef, editText.getText().toString().trim());
-                            refreshFragment();
+                            refreshActivity();
                         }
                     }
                 });
@@ -331,8 +313,8 @@ public class ProfileFragment extends Fragment {
         imageView_edit_mobileNum.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                editDialog = new AlertDialog.Builder(getActivity()).create();
-                editText = new EditText(getActivity());
+                editDialog = new AlertDialog.Builder(MyProfile.this).create();
+                editText = new EditText(MyProfile.this);
 
                 // Get the database reference for the field to update
                 final DatabaseReference phoneRef = FirebaseDatabase.getInstance()
@@ -349,7 +331,7 @@ public class ProfileFragment extends Fragment {
                             editText.setError("Please enter a value");
                         }else{
                             updateProfile(phoneRef, editText.getText().toString().trim());
-                            refreshFragment();
+                            refreshActivity();
                         }
                     }
                 });
@@ -378,6 +360,18 @@ public class ProfileFragment extends Fragment {
             }
         });
 
+        //When close button is clicked
+        closeBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
+    }
+
+    private void refreshActivity() {
+        finish();
+        startActivity(getIntent());
     }
 
     private void updateProfile(DatabaseReference reference, String value){
@@ -386,7 +380,7 @@ public class ProfileFragment extends Fragment {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         if(task.isSuccessful()){
-                            Toast.makeText(getActivity(), "Profile Updated", Toast.LENGTH_LONG).show();
+                            Toast.makeText(getApplicationContext(), "Profile Updated", Toast.LENGTH_LONG).show();
                         }
                     }
                 });
@@ -407,23 +401,20 @@ public class ProfileFragment extends Fragment {
     }
 
     private void displayProfile() {
-        currentUser = mAuth.getCurrentUser();
 
-        databaseRef = FirebaseDatabase.getInstance().getReference("profiles");
-        databaseRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        final DatabaseReference dbreference = FirebaseDatabase.getInstance().getReference("profiles").child(currentUser.getUid());
+
+        dbreference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                for (DataSnapshot snap : dataSnapshot.getChildren()){
-                    String f = snap.child("firstname").getValue(String.class);
-                    String l = snap.child("lastname").getValue(String.class);
-                    nameView.setText(f+" "+l);
-                    emailView.setText(snap.child("email").getValue(String.class));
-                    genderView.setText(snap.child("gender").getValue(String.class));
-                    ageView.setText(snap.child("age").getValue(String.class));
-                    homeaddressView.setText(snap.child("homeaddress").getValue(String.class));
-                    phoneView.setText(snap.child("phone").getValue(String.class));
-
-                }
+                String f = dataSnapshot.child("firstname").getValue(String.class);
+                String l = dataSnapshot.child("lastname").getValue(String.class);
+                nameView.setText(f+" "+l);
+                emailView.setText(dataSnapshot.child("email").getValue(String.class));
+                genderView.setText(dataSnapshot.child("gender").getValue(String.class));
+                    ageView.setText(dataSnapshot.child("age").getValue(String.class));
+                    homeaddressView.setText(dataSnapshot.child("homeaddress").getValue(String.class));
+                    phoneView.setText(dataSnapshot.child("phone").getValue(String.class));
             }
 
             @Override
@@ -433,9 +424,62 @@ public class ProfileFragment extends Fragment {
         });
     }
 
-    private void refreshFragment(){
-        // Reload current fragment
-        FragmentTransaction ft = getFragmentManager().beginTransaction();
-        ft.detach(this).attach(this).commit();
+    @Override
+    public void onBackPressed() {
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.navigation_menu, menu);
+        return true;
+    }
+
+//    @Override
+//    public boolean onOptionsItemSelected(MenuItem item) {
+//        // Handle action bar item clicks here. The action bar will
+//        // automatically handle clicks on the Home/Up button, so long
+//        // as you specify a parent activity in AndroidManifest.xml.
+//        int id = item.getItemId();
+//
+//        //noinspection SimplifiableIfStatement
+//        if (id == R.id.action_settings) {
+//            return true;
+//        }
+//
+//        return super.onOptionsItemSelected(item);
+//    }
+
+    @SuppressWarnings("StatementWithEmptyBody")
+    @Override
+    public boolean onNavigationItemSelected(MenuItem item) {
+        // Handle navigation view item clicks here.
+        int id = item.getItemId();
+
+        if (id == R.id.nav_camera) {
+            // Handle the camera action
+        } else if (id == R.id.nav_gallery) {
+
+        } else if (id == R.id.nav_slideshow) {
+
+        } else if (id == R.id.nav_manage) {
+
+        } else if (id == R.id.nav_share) {
+
+        } else if (id == R.id.nav_send) {
+
+        }
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
+    }
+
+
 }
