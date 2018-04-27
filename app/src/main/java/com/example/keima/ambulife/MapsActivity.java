@@ -15,6 +15,7 @@ import android.location.LocationManager;
 import android.renderscript.Sampler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -61,6 +62,8 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback {
     private static final String TAG = "MapsActivity";
     private GoogleMap mMap;
     private LocationManager mLocationManager;
+    private Geocoder geocoder;
+    public static FloatingActionButton fab;
     private boolean mLocationPermissionsGranted = false;
     LatLng coordinates;
     ProgressDialog dialog;
@@ -78,6 +81,10 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Instantiate the class Geocoder
+        geocoder = new Geocoder(getContext());
+
     }
 
 
@@ -109,11 +116,10 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback {
             return;
         }
 
-        dialog.show();
-
         // Check if the Network Provider is enabled
         // If True: Proceed to location listener
         if (mLocationManager.isProviderEnabled(mLocationManager.NETWORK_PROVIDER)) {
+            dialog.show();
             mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, new LocationListener() {
                 @Override
                 public void onLocationChanged(Location location) {
@@ -123,8 +129,6 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback {
                     // Instantiate the class LatLng
                     LatLng mycoordinates = new LatLng(lat, lng);
                     coordinates = mycoordinates;
-                    // Instantiate the class Geocoder
-                    Geocoder geocoder = new Geocoder(getContext());
                     try {
                         List<Address> addressList = geocoder.getFromLocation(lat, lng, 1);
                         String address = addressList.get(0).getSubLocality() + ", " + addressList.get(0).getLocality() + ",";
@@ -155,6 +159,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback {
                 }
             });
         } else if (mLocationManager.isProviderEnabled(mLocationManager.GPS_PROVIDER)) {
+            dialog.show();
             mLocationManager.requestLocationUpdates(mLocationManager.GPS_PROVIDER, 0, 0, new LocationListener() {
                 @Override
                 public void onLocationChanged(Location location) {
@@ -164,8 +169,6 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback {
                     // Instantiate the class LatLng
                     LatLng mycoordinates = new LatLng(lat, lng);
                     coordinates = mycoordinates;
-                    // Instantiate the class Geocoder
-                    Geocoder geocoder = new Geocoder(getContext());
                     try {
                         List<Address> addressList = geocoder.getFromLocation(lat, lng, 1);
                         String address = addressList.get(0).getSubLocality() + ", " + addressList.get(0).getLocality() + ",";
@@ -197,6 +200,8 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback {
             });
         }
     }
+
+
 
     private void updateLocationOnDatabase(DatabaseReference reference, LatLng value){
         reference.setValue(value).addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -272,5 +277,11 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback {
         ft.detach(this).attach(this).commit();
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
 
+        MapInterface mi = new MapInterface();
+        mi.showCallButton();
+    }
 }

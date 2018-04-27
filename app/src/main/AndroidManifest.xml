@@ -15,6 +15,10 @@
         android:name="com.google.gms.vision.DEPENDENCIES"
         android:value="face" />
 
+    <uses-feature
+        android:glEsVersion="0x00020000"
+        android:required="true" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -32,7 +36,7 @@
                 android:resource="@xml/file_paths" />
         </provider>
 
-        <activity android:name=".MainActivity"></activity>
+        <activity android:name=".MainActivity" />
         <activity
             android:name=".RegisterScreen"
             android:screenOrientation="portrait" />
@@ -59,10 +63,10 @@
             android:value="@string/google_maps_key" />
 
         <activity android:name=".MapInterface" />
+        <activity
+            android:name=".MyProfile"
+            android:label="@string/title_activity_my_profile"
+            android:theme="@style/AppTheme"></activity>
     </application>
-
-    <uses-feature
-        android:glEsVersion="0x00020000"
-        android:required="true" />
 
 </manifest>
