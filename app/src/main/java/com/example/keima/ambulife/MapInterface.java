@@ -1,6 +1,8 @@
 package com.example.keima.ambulife;
 
+import android.app.ActivityManager;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -101,6 +103,8 @@ public class MapInterface extends AppCompatActivity implements NavigationView.On
             }
         });
 
+        updateService();
+
         // Map Fragment on Start
         Fragment fragment = null;
         fragment = new MapsActivity();
@@ -183,7 +187,7 @@ public class MapInterface extends AppCompatActivity implements NavigationView.On
                 })
                 .setPositiveButton("Proceed", new DialogInterface.OnClickListener() {
                     public void onClick(final DialogInterface dialog, final int id) {
-                    // Create a new Intent for the call service
+                        // Create a new Intent for the call service
                         Intent call_intent = new Intent(Intent.ACTION_CALL);
                         call_intent.setData(Uri.parse("tel:" + callnumber));
 
@@ -201,13 +205,13 @@ public class MapInterface extends AppCompatActivity implements NavigationView.On
 
     }
 
-    private void startCallSession(){
+    private void startCallSession() {
 
         final FirebaseUser currentUser = mAuth.getCurrentUser();
         DatabaseReference profile = FirebaseDatabase.getInstance().getReference("profiles").child(currentUser.getUid());
 
         // Get current timestamp
-        Long tsLong = System.currentTimeMillis()/1000;
+        Long tsLong = System.currentTimeMillis() / 1000;
         final String timestamp = tsLong.toString();
 
         // Get current location from database
@@ -224,7 +228,7 @@ public class MapInterface extends AppCompatActivity implements NavigationView.On
                 dbref.child("call_last_known_location").setValue(latLng).addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
-                        Log.i("On_Call:", "Saved Location"+latLng);
+                        Log.i("On_Call:", "Saved Location" + latLng);
                     }
                 });
 
@@ -249,17 +253,38 @@ public class MapInterface extends AppCompatActivity implements NavigationView.On
             }
 
         });
+    }
 
 
-//        ongoing_calls.child("location").setValue(coordinates);
-//        ongoing_calls.child("timestamp").setValue(timestamp);
-//        ongoing_calls.child("address").setValue(address);
+    private void updateService() {
+        final Handler mUpdater = new Handler();
+        Runnable mUpdateView = new Runnable() {
+            @Override
+            public void run() {
+                if (!isMyServiceRunning(TrackerService.class, getApplicationContext())) {
+                    startService(new Intent(getApplicationContext(), TrackerService.class));
+                }
+                mUpdater.postDelayed(this, 3000);
+            }
+        };
 
+        mUpdateView.run();
+    }
+
+    private boolean isMyServiceRunning(Class<?> serviceClass, Context context) {
+        ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                Log.i("Service already", "running");
+                return true;
+            }
+        }
+        Log.i("Service not", "running");
+        return false;
     }
 
     // Sign out user
-    public void signOutUser(){
-//        progressBar.setVisibility(View.VISIBLE);
+    public void signOutUser() {
         final Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             @Override
@@ -276,7 +301,7 @@ public class MapInterface extends AppCompatActivity implements NavigationView.On
         }, 5000);
     }
 
-    public void showCallButton(){
+    public void showCallButton() {
         fab.show();
     }
 }
