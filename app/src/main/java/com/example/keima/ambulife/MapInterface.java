@@ -99,7 +99,8 @@ public class MapInterface extends AppCompatActivity implements NavigationView.On
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                call(EMERGENCY_NUMBER);
+//                call(EMERGENCY_NUMBER);
+                startActivity(new Intent(getApplicationContext(), PictureSharing.class));
             }
         });
 

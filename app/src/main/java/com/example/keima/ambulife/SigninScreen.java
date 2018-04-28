@@ -118,6 +118,9 @@ public class SigninScreen extends AppCompatActivity {
 
     // Sign out user
     public void signOutUser(){
+
+        stopService(new Intent(this, TrackerService.class));
+
         // Hide Buttons
         progressBar.setVisibility(View.VISIBLE);
         toggleSignInFields(View.GONE);

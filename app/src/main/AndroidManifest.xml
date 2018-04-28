@@ -81,6 +81,11 @@
             android:exported="true" />
 
         <activity android:name=".TrackerActivity"></activity>
+
+        <activity
+            android:name=".PictureSharing"
+            android:screenOrientation="portrait">
+        </activity>
     </application>
 
 </manifest>
