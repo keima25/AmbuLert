@@ -11,7 +11,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
-import android.media.FaceDetector;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -31,7 +30,6 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 import android.Manifest;
-
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.vision.Frame;
@@ -43,10 +41,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.karan.churi.PermissionManager.PermissionManager;
-import com.rohitarya.picasso.facedetection.transformation.FaceCenterCrop;
-import com.rohitarya.picasso.facedetection.transformation.core.PicassoFaceDetector;
 import com.squareup.picasso.Picasso;
-
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -85,7 +80,6 @@ public class CameraActivity extends AppCompatActivity {
         progress = new ProgressDialog(this);
         Storage = FirebaseStorage.getInstance().getReference();
 
-        PicassoFaceDetector.initialize(this);
 
         // Initialize Selfie Button and Camera
         toggleButton("selfie");
@@ -203,10 +197,5 @@ public class CameraActivity extends AppCompatActivity {
 
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        PicassoFaceDetector.releaseDetector();
-    }
 }
 
