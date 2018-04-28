@@ -98,13 +98,10 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // Initialize Permission Manager
-        permissionManager = new PermissionManager() {
-        };
-        permissionManager.checkAndRequestPermissions(getActivity());
+
         statusCheck();
 
-        mLocationManager = (LocationManager) getActivity().getSystemService(LOCATION_SERVICE);
+//        mLocationManager = (LocationManager) getActivity().getSystemService(LOCATION_SERVICE);
 
         // Initialize the map
         initMap();
@@ -135,7 +132,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback {
                         address += addressList.get(0).getCountryName();
                         // Add the marker and move the camera to the user coordinates
                         mMap.addMarker(new MarkerOptions().position(mycoordinates).title(address));
-                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mycoordinates, 15.0f));
+                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mycoordinates, 17.0f));
                         dialog.hide();
                         updateLocationOnDatabase(locationReference, mycoordinates);
                     } catch (IOException e) {
@@ -215,6 +212,10 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback {
     }
 
     private void statusCheck() {
+        // Initialize Permission Manager
+        permissionManager = new PermissionManager() {};
+        permissionManager.checkAndRequestPermissions(getActivity());
+        // Check Location Service
         mLocationManager = (LocationManager) getActivity().getSystemService(LOCATION_SERVICE);
         if (!mLocationManager.isProviderEnabled(mLocationManager.GPS_PROVIDER)) {
             buildAlertMessageNoGps();
@@ -231,11 +232,6 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback {
 
                     }
                 });
-//                .setNegativeButton("No", new DialogInterface.OnClickListener() {
-//                    public void onClick(final DialogInterface dialog, final int id) {
-//                        dialog.cancel();
-//                    }
-//                });
         final AlertDialog alert = builder.create();
         alert.show();
     }

@@ -37,6 +37,7 @@ dependencies {
     compile 'com.google.firebase:firebase-auth:11.0.4'
     compile 'com.google.android.gms:play-services-maps:11.0.4'
     compile 'com.google.android.gms:play-services-vision:11.0.4'
+    compile 'com.github.aryarohit07:picasso-facedetection-transformation:0.3.0'
     compile 'com.github.karanchuri:PermissionManager:0.1.0'
     testCompile 'junit:junit:4.12'
     implementation 'com.squareup.picasso:picasso:2.71828'
