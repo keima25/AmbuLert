@@ -14,7 +14,10 @@
         android:layout_weight="1"
         android:background="@color/colorBackground"
         android:orientation="vertical"
-        android:paddingTop="20dp">
+        android:paddingTop="20dp"
+        tools:layout_editor_absoluteX="90dp"
+        tools:layout_editor_absoluteY="0dp">
+
 
         <TextView
             android:id="@+id/registerLogoText"
@@ -177,6 +180,31 @@
             android:layout_centerVertical="true"
             android:indeterminateTint="@color/colorWhite"
             android:visibility="gone" />
+
+        <RadioGroup
+            android:id="@+id/RG"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignTop="@+id/registerLogoText"
+            android:layout_marginEnd="39dp">
+
+            <RadioButton
+                android:id="@+id/RadioUser"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:buttonTint="@color/colorWhite"
+                android:checked="true"
+                android:text="User" />
+
+            <RadioButton
+                android:id="@+id/RadioEMS"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:buttonTint="@color/colorWhite"
+                android:text="EMS" />
+        </RadioGroup>
+
     </RelativeLayout>
 
 

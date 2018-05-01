@@ -11,18 +11,20 @@ public class Users {
     String firstname;
     String lastname;
     String phone;
+    String type;
 
 
     Users(){
 
     }
 
-    public Users(String id, String email, String firstname, String lastname, String phone) {
+    public Users(String id, String email, String firstname, String lastname, String phone, String type) {
         this.id = id;
         this.email = email;
         this.firstname = firstname;
         this.lastname = lastname;
         this.phone = phone;
+        this.type = type;
     }
 
     public String getId() {
@@ -44,4 +46,6 @@ public class Users {
     public String getPhone() {
         return phone;
     }
+
+    public String getType() {return type;}
 }

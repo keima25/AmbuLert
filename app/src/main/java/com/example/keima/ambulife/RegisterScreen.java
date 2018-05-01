@@ -11,6 +11,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -30,6 +31,8 @@ public class RegisterScreen extends AppCompatActivity{
     RadioButton radioBtnTerms;
     Button      btnRegister, btnGotoSignin;
     ProgressBar progressBar;
+    RadioButton rb;
+    RadioGroup rg;
 
     // Declare Firebase object
     private FirebaseAuth mAuth;
@@ -66,6 +69,7 @@ public class RegisterScreen extends AppCompatActivity{
         btnRegister = (Button) findViewById(R.id.btnRegister);
         btnGotoSignin = (Button) findViewById(R.id.btnBackSignin);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
+        rg = (RadioGroup) findViewById(R.id.RG);
 
         btnRegister.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -104,6 +108,10 @@ public class RegisterScreen extends AppCompatActivity{
         final String password = editText_regPassword.getText().toString().trim();
         String confirm_password = editText_regCPassword.getText().toString().trim();
         final String phone = editText_Phone.getText().toString().trim();
+
+        int radioButton = rg.getCheckedRadioButtonId();
+        rb = (RadioButton) findViewById(radioButton);
+        final String type = rb.getText().toString().trim();
 
         // Check to make sure all the fields are filled-in
         if (firstname.isEmpty()) {
@@ -175,7 +183,7 @@ public class RegisterScreen extends AppCompatActivity{
 
                     String id = newUser.getUid();
 
-                    Users users = new Users(id, username, firstname, lastname, phone);
+                    Users users = new Users(id, username, firstname, lastname, phone, type);
 
                     databaseRegisterUser.child(id).setValue(users);
 
