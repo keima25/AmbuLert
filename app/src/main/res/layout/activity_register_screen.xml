@@ -186,8 +186,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
             android:layout_alignTop="@+id/registerLogoText"
-            android:layout_marginEnd="39dp">
+            android:layout_marginEnd="39dp"
+            android:layout_marginRight="39dp">
 
             <RadioButton
                 android:id="@+id/RadioUser"
@@ -195,7 +197,7 @@
                 android:layout_height="wrap_content"
                 android:buttonTint="@color/colorWhite"
                 android:checked="true"
-                android:text="User" />
+                android:text="USER" />
 
             <RadioButton
                 android:id="@+id/RadioEMS"
