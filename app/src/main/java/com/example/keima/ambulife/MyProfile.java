@@ -1,5 +1,6 @@
 package com.example.keima.ambulife;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -23,8 +24,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -43,7 +46,6 @@ public class MyProfile extends AppCompatActivity implements NavigationView.OnNav
     private ImageView closeBtn, profileImageView, imageView_edit_name, imageView_edit_address, imageView_edit_age,
             imageView_edit_gender, imageView_edit_mobileNum;
     private TextView emailView, nameView, homeaddressView, ageView, genderView, phoneView;
-    private CardView nameView_card, homeaddressView_card, ageView_card, genderView_card, phoneView_card;
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
     private DatabaseReference databaseRef;
@@ -76,12 +78,6 @@ public class MyProfile extends AppCompatActivity implements NavigationView.OnNav
         genderView = findViewById(R.id.profile_gender);
         phoneView = findViewById(R.id.profile_phoneNum);
 
-        nameView_card = findViewById(R.id.name_card);
-        homeaddressView_card = findViewById(R.id.homeAddress_card);
-        ageView_card = findViewById(R.id.age_card);
-        genderView_card = findViewById(R.id.gender_card);
-        phoneView_card = findViewById(R.id.profile_phoneNum_card);
-
         imageView_edit_name = findViewById(R.id.imageView_edit_name);
         imageView_edit_address = findViewById(R.id.imageView_edit_address);
         imageView_edit_age = findViewById(R.id.imageView_edit_age);
@@ -113,26 +109,32 @@ public class MyProfile extends AppCompatActivity implements NavigationView.OnNav
             @Override
             public void onClick(View view) {
                 editDialog = new AlertDialog.Builder(MyProfile.this).create();
-                editText = new EditText(MyProfile.this);
-                editText2 = new EditText(MyProfile.this);
+                Context context = getApplicationContext();
+                final LinearLayout layout = new LinearLayout(context);
+                layout.setOrientation(LinearLayout.VERTICAL);
+                final EditText fnameText = new EditText(MyProfile.this);
+                final EditText lnameText = new EditText(MyProfile.this);
 
                 // Get the database reference for the field to update
-                final DatabaseReference firstnameRef = FirebaseDatabase.getInstance()
-                        .getReference("profiles").child(currentUser.getUid()).child("firstname");
-                final DatabaseReference lastnameRef = FirebaseDatabase.getInstance()
-                        .getReference("profiles").child(currentUser.getUid()).child("lastname");
-
-                // Set the Dialog title and view
-                editDialog.setTitle("Edit name");
-                editDialog.setView(editText); // First name;
+//                final DatabaseReference firstnameRef = FirebaseDatabase.getInstance()
+//                        .getReference("profiles").child(currentUser.getUid()).child("firstname");
+//                final DatabaseReference lastnameRef = FirebaseDatabase.getInstance()
+//                        .getReference("profiles").child(currentUser.getUid()).child("lastname");
+                final DatabaseReference profileName = FirebaseDatabase.getInstance().getReference("profiles")
+                        .child(currentUser.getUid());
 
                 editDialog.setButton(DialogInterface.BUTTON_POSITIVE, "SAVE", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        if(TextUtils.isEmpty(editText.getText())){
-                            editText.setError("Please enter a value");
-                        }else{
-                            updateProfile(firstnameRef, editText.getText().toString().trim());
+                        if(TextUtils.isEmpty(fnameText.getText())){
+                            fnameText.setError("Please enter a value");
+                        }
+                        else if(TextUtils.isEmpty(lnameText.getText())){
+                            lnameText.setError("Please enter a value");
+                        }
+                        else{
+                            updateProfile(profileName, fnameText.getText().toString().trim(),
+                                    lnameText.getText().toString().trim());
                             refreshActivity();
                         }
                     }
@@ -145,10 +147,14 @@ public class MyProfile extends AppCompatActivity implements NavigationView.OnNav
                 });
 
                 // GET the value of the reference and set for editText
-                firstnameRef.addValueEventListener(new ValueEventListener() {
+                profileName.addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                        editText.setText(dataSnapshot.getValue(String.class));
+                        layout.removeAllViews();
+                        fnameText.setText(dataSnapshot.child("firstname").getValue(String.class));
+                        layout.addView(fnameText); // Add editText1 to layout
+                        lnameText.setText(dataSnapshot.child("lastname").getValue(String.class));
+                        layout.addView(lnameText); // Add editText2 to layout
                     }
                     @Override
                     public void onCancelled(DatabaseError databaseError) {
@@ -156,8 +162,13 @@ public class MyProfile extends AppCompatActivity implements NavigationView.OnNav
                     }
                 });
 
+                // Set the Dialog title and view
+                editDialog.setTitle("Edit name");
+                editDialog.setView(layout); // Adds the layout containg the firstname and lastname edittext
+
                 //Show the Edit Dialog
                 editDialog.show();
+                editDialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE|WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
             }
         });
 
@@ -385,6 +396,25 @@ public class MyProfile extends AppCompatActivity implements NavigationView.OnNav
                     }
                 });
         return;
+    }
+
+    private void updateProfile(DatabaseReference reference, String value, String value2){
+        reference.child("firstname").setValue(value)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if(task.isSuccessful()){
+                            Toast.makeText(getApplicationContext(), "Profile Updated", Toast.LENGTH_LONG).show();
+                        }
+                    }
+                });
+        reference.child("lastname").setValue(value2)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task)    {
+                        Toast.makeText(getApplicationContext(), "Profile Updated", Toast.LENGTH_LONG).show();
+                    }
+                });
     }
 
     private void getReferenceValue(DatabaseReference reference){
