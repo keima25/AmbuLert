@@ -188,6 +188,7 @@ public class SigninScreen extends AppCompatActivity {
                     progressBar.setVisibility(View.GONE);
                     toggleSignInFields(View.VISIBLE);
                     Toast.makeText(getApplicationContext(), "Signed in successfully", Toast.LENGTH_LONG).show();
+
                     refreshActivity();
                 } else {
                     // If sign in fails, display a message to the user.

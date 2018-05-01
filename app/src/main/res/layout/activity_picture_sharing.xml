@@ -8,10 +8,13 @@
 
     <Button
         android:id="@+id/call"
-        android:layout_width="wrap_content"
+        android:layout_marginLeft="25dp"
+        android:layout_marginRight="25dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
         android:text="Call 911"
+        android:textColor="@color/colorWhite"
+        android:background="@color/colorButtonMainRed"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -21,7 +24,7 @@
         android:id="@+id/imageButton"
         android:layout_width="336dp"
         android:layout_height="300dp"
-        android:layout_marginBottom="163dp"
+        android:layout_marginBottom="100dp"
         android:layout_marginEnd="11dp"
         android:layout_marginLeft="11dp"
         android:layout_marginRight="11dp"
@@ -37,11 +40,11 @@
     <android.support.design.widget.TextInputLayout
         android:id="@+id/textInputLayout2"
         android:layout_width="298dp"
-        android:layout_height="90dp"
+        android:layout_height="150dp"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="0dp"
         app:layout_constraintBottom_toTopOf="@+id/call"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.351"
@@ -54,8 +57,9 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
+            android:layout_marginBottom="10dp"
             android:ems="10"
-            android:hint="Remarks"
+            android:hint="Remarks:"
             android:inputType="textPersonName" />
     </android.support.design.widget.TextInputLayout>
 

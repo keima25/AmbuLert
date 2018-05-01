@@ -1,6 +1,7 @@
 package com.example.keima.ambulife;
 
 import android.app.ActivityManager;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -24,9 +25,11 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
@@ -53,6 +56,7 @@ public class MapInterface extends AppCompatActivity implements NavigationView.On
     private android.support.v7.widget.Toolbar appbar;
     public static FloatingActionButton fab;
     private final static String EMERGENCY_NUMBER = "1234567890";
+    private TextView nav_view_email, nav_view_name;
     ProgressBar progressBar;
     NavigationView nav_view;
 
@@ -85,7 +89,6 @@ public class MapInterface extends AppCompatActivity implements NavigationView.On
         //Get NaviagationView id
         nav_view = (NavigationView) findViewById(R.id.nav_view);
 
-
         // Assign drawer listener
         mDrawerLayout.addDrawerListener(mToggle);
         mToggle.syncState();
@@ -93,6 +96,7 @@ public class MapInterface extends AppCompatActivity implements NavigationView.On
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         nav_view.setNavigationItemSelectedListener(this);
+
 
 
         // Floating action button function onCLick
@@ -104,7 +108,7 @@ public class MapInterface extends AppCompatActivity implements NavigationView.On
             }
         });
 
-        updateService();
+        updateService("start");
 
         // Map Fragment on Start
         Fragment fragment = null;
@@ -257,7 +261,9 @@ public class MapInterface extends AppCompatActivity implements NavigationView.On
     }
 
 
-    private void updateService() {
+    // This method checks checks everytime the service is stopped while in app
+    // and starts it again
+    private void updateService(String action) {
         final Handler mUpdater = new Handler();
         Runnable mUpdateView = new Runnable() {
             @Override
@@ -269,7 +275,10 @@ public class MapInterface extends AppCompatActivity implements NavigationView.On
             }
         };
 
-        mUpdateView.run();
+        if(action == "start")
+            mUpdateView.run();
+        else
+            mUpdater.removeCallbacks(mUpdateView);
     }
 
     private boolean isMyServiceRunning(Class<?> serviceClass, Context context) {
@@ -305,4 +314,30 @@ public class MapInterface extends AppCompatActivity implements NavigationView.On
     public void showCallButton() {
         fab.show();
     }
+
+
+    @Override
+    public void onBackPressed() {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("You are leaving Ambulert. Continue exiting the app?")
+                .setCancelable(true)
+                .setPositiveButton("Exit", new DialogInterface.OnClickListener() {
+                    public void onClick(final DialogInterface dialog, final int id) {
+                        updateService("stop");
+                        stopService(new Intent(MapInterface.this, TrackerService.class));
+                        finish();
+                    }
+                });
+        final AlertDialog alert = builder.create();
+        alert.show();
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+       updateService("stop");
+    }
+
+
 }
