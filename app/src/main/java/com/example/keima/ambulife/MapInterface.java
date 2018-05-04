@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Location;
 import android.net.Uri;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -220,22 +221,15 @@ public class MapInterface extends AppCompatActivity implements NavigationView.On
         final String timestamp = tsLong.toString();
 
         // Get current location from database
-        profile.child("last_known_location").addValueEventListener(new ValueEventListener() {
+        profile.child("last_known_location").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                final LatLng latLng = new LatLng(
-                        dataSnapshot.child("latitude").getValue(Long.class),
-                        dataSnapshot.child("longitude").getValue(Long.class)
-                );
+
+                double lat = dataSnapshot.child("latitude").getValue(Double.class);
+                double lng = dataSnapshot.child("longitude").getValue(Double.class);
+                final LatLng curLocation = new LatLng(lat, lng);
 
                 DatabaseReference dbref = FirebaseDatabase.getInstance().getReference("ongoing_calls").child(currentUser.getUid());
-
-                dbref.child("call_last_known_location").setValue(latLng).addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        Log.i("On_Call:", "Saved Location" + latLng);
-                    }
-                });
 
                 dbref.child("caller_id").setValue(currentUser.getUid()).addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
@@ -248,6 +242,13 @@ public class MapInterface extends AppCompatActivity implements NavigationView.On
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         Log.i("On_Call", "Saved timestamp");
+                    }
+                });
+
+                dbref.child("call_last_known_location").setValue(curLocation).addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        Log.i("On_Call:", "Saved Location" + curLocation);
                     }
                 });
             }
@@ -276,9 +277,10 @@ public class MapInterface extends AppCompatActivity implements NavigationView.On
         };
 
         if(action == "start")
-            mUpdateView.run();
-        else
-            mUpdater.removeCallbacks(mUpdateView);
+        { mUpdateView.run();}
+
+        if(action == "stop")
+        { mUpdater.removeCallbacks(mUpdateView);}
     }
 
     private boolean isMyServiceRunning(Class<?> serviceClass, Context context) {

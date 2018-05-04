@@ -5,6 +5,8 @@ import android.app.ActivityManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.LocationManager;
@@ -24,6 +26,8 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
@@ -39,6 +43,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.karan.churi.PermissionManager.PermissionManager;
 
+import org.xml.sax.ErrorHandler;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -46,7 +52,7 @@ import java.util.List;
 
 import static android.content.Context.LOCATION_SERVICE;
 
-public class MapsActivity extends Fragment implements OnMapReadyCallback {
+public class MapsActivity extends Fragment implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener{
 
     private GoogleMap mMap;
     private LocationManager mLocationManager;
@@ -54,6 +60,16 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback {
     private Geocoder geocoder;
     private static final String TAG = MapsActivity.class.getSimpleName();
     private HashMap<String, Marker> mMarkers = new HashMap<>();
+    String usertype;
+
+    // When a location update is received, put or update
+    // its value in mMarkers, which contains all the markers
+    // for locations received, so that we can build the
+    // boundaries required to show them all on the map at once
+    String key;
+    double lat_marker;
+    double lng_marker;
+    LatLng location;
 
     FirebaseUser user;
 
@@ -89,6 +105,11 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback {
 
         statusCheck();
 
+        SharedPreferences sharedPref = getContext().getSharedPreferences("userInfo", Context.MODE_PRIVATE);
+        usertype = sharedPref.getString("userType", "");
+
+
+
         // Initialize the map
         Log.d(TAG, "initMap: initializing map");
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
@@ -102,7 +123,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 if (task.isSuccessful()) {
-                    Toast.makeText(getContext(), "Location Updated", Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(getContext(), "Location Updated", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -167,7 +188,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback {
         ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                setMarker(dataSnapshot);
+                setMarker(dataSnapshot, usertype);
             }
 
             @Override
@@ -178,50 +199,114 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback {
     }
 
 
-    private void setMarker(DataSnapshot dataSnapshot) {
-        // When a location update is received, put or update
-        // its value in mMarkers, which contains all the markers
-        // for locations received, so that we can build the
-        // boundaries required to show them all on the map at once
-        String key = dataSnapshot.getKey();
-        double lat = dataSnapshot.child("latitude").getValue(Double.class);
-        double lng = dataSnapshot.child("longitude").getValue(Double.class);
-        LatLng location = new LatLng(lat, lng);
-        if (!mMarkers.containsKey(key)) {
+    private void setMarker(DataSnapshot dataSnapshot, String user) {
 
-            // Add the marker and move the camera to the user coordinates
-            mMarkers.put(key, mMap.addMarker(new MarkerOptions().title(key).position(location)));
-            try {
-                List<Address> addressList = geocoder.getFromLocation(location.latitude, location.longitude, 1);
-                String address = addressList.get(0).getSubLocality() + ", " + addressList.get(0).getLocality() + ",";
-                address += addressList.get(0).getCountryName();
+//        SharedPreferences pref = getContext().getSharedPreferences("userInfo", Context.MODE_PRIVATE);
+//
+//        String type = pref.getString("userType", "");
 
-                updateLocationOnDatabase(locationReference, location);
-            } catch (IOException e) {
-                e.printStackTrace();
+        String type = user;
+
+        final DataSnapshot markerSnap = dataSnapshot;
+        key = markerSnap.getKey();
+        lat_marker = markerSnap.child("latitude").getValue(Double.class);
+        lng_marker = markerSnap.child("longitude").getValue(Double.class);
+        location = new LatLng(lat_marker, lng_marker);
+
+
+        if(type == "EMS"){
+            Toast.makeText(getContext(), usertype, Toast.LENGTH_SHORT).show();
+
+            if (!mMarkers.containsKey(key)) {
+                String address = "";
+                try {
+                    List<Address> addressList = geocoder.getFromLocation(location.latitude, location.longitude, 1);
+                    address = addressList.get(0).getSubLocality() + ", " + addressList.get(0).getLocality() + ",";
+                    address += addressList.get(0).getCountryName();
+
+                    updateLocationOnDatabase(locationReference, location);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                // Add the marker and move the camera to the user coordinates
+                mMarkers.put(key, mMap.addMarker(new MarkerOptions().title(address).position(location)
+                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))));
+
             }
-        }
-        else {
-            // Add the marker and move the camera to the user coordinates
-            mMarkers.get(key).setPosition(location);
-            try {
-                List<Address> addressList = geocoder.getFromLocation(location.latitude, location.longitude, 1);
-                String address = addressList.get(0).getSubLocality() + ", " + addressList.get(0).getLocality() + ",";
-                address += addressList.get(0).getCountryName();
+            else {
+                // Add the marker and move the camera to the user coordinates
+                mMarkers.get(key).setPosition(location);
+                try {
+                    List<Address> addressList = geocoder.getFromLocation(location.latitude, location.longitude, 1);
+                    String address = addressList.get(0).getSubLocality() + ", " + addressList.get(0).getLocality() + ",";
+                    address += addressList.get(0).getCountryName();
 
-                updateLocationOnDatabase(locationReference, location);
-            } catch (IOException e) {
-                e.printStackTrace();
+                    updateLocationOnDatabase(locationReference, location);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
+
+            LatLngBounds.Builder builder = new LatLngBounds.Builder();
+            for (Marker marker : mMarkers.values()) {
+                builder.include(marker.getPosition());
+            }
+            mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(builder.build(), 300));
+            mMap.setOnMarkerClickListener(this);
+
         }
 
-        LatLngBounds.Builder builder = new LatLngBounds.Builder();
-        for (Marker marker : mMarkers.values()) {
-            builder.include(marker.getPosition());
+//        If UserType = USER
+        else{
+//            float markerColor = BitmapDescriptorFactory.HUE_GREEN;
+
+            Toast.makeText(getContext(), usertype, Toast.LENGTH_SHORT).show();
+
+
+            if (!mMarkers.containsKey(key)) {
+                String address = "";
+                try {
+                    List<Address> addressList = geocoder.getFromLocation(location.latitude, location.longitude, 1);
+                    address = addressList.get(0).getSubLocality() + ", " + addressList.get(0).getLocality() + ",";
+                    address += addressList.get(0).getCountryName();
+
+                    updateLocationOnDatabase(locationReference, location);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                // Add the marker and move the camera to the user coordinates
+                mMarkers.put(key, mMap.addMarker(new MarkerOptions().title(address).position(location)
+                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ROSE))));
+
+            }
+            else {
+                // Add the marker and move the camera to the user coordinates
+                mMarkers.get(key).setPosition(location);
+                try {
+                    List<Address> addressList = geocoder.getFromLocation(location.latitude, location.longitude, 1);
+                    String address = addressList.get(0).getSubLocality() + ", " + addressList.get(0).getLocality() + ",";
+                    address += addressList.get(0).getCountryName();
+
+                    updateLocationOnDatabase(locationReference, location);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            LatLngBounds.Builder builder = new LatLngBounds.Builder();
+            for (Marker marker : mMarkers.values()) {
+                builder.include(marker.getPosition());
+            }
+            mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(builder.build(), 300));
+            mMap.setOnMarkerClickListener(this);
         }
-        mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(builder.build(), 300));
+
+
+
+
     }
-
 
     @Override
     public void onResume() {
@@ -231,4 +316,19 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback {
         mi.showCallButton();
     }
 
+    @Override
+    public boolean onMarkerClick(Marker marker) {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setMessage("Video call with this user?")
+                .setCancelable(true)
+                .setPositiveButton("Continue", new DialogInterface.OnClickListener() {
+                    public void onClick(final DialogInterface dialog, final int id) {
+                        startActivity(new Intent(getContext(), VideoSharing.class));
+                    }
+                });
+        final AlertDialog alert = builder.create();
+        alert.show();
+
+        return false;
+    }
 }

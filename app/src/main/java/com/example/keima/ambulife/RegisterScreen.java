@@ -187,6 +187,14 @@ public class RegisterScreen extends AppCompatActivity{
 
                     databaseRegisterUser.child(id).setValue(users);
 
+                    final DatabaseReference dblocationref = FirebaseDatabase.getInstance().getReference("profiles")
+                            .child(id).child("last_known_location").child("latitude");
+                    final DatabaseReference dblocationref2 = FirebaseDatabase.getInstance().getReference("profiles")
+                            .child(id).child("last_known_location").child("longitude");
+
+                    dblocationref.setValue(0);
+                    dblocationref2.setValue(0);
+
                     Toast.makeText(getApplicationContext(), "Registration Successful",
                             Toast.LENGTH_SHORT).show();
                     updateDisplayName();

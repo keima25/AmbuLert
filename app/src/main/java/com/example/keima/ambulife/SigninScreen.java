@@ -1,6 +1,8 @@
 package com.example.keima.ambulife;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -18,6 +20,11 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import static android.view.View.GONE;
 
@@ -53,6 +60,30 @@ public class SigninScreen extends AppCompatActivity {
         signin_password = (EditText) findViewById(R.id.signinPassword);
         btnSignin = (Button) findViewById(R.id.btnSignin);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
+
+
+
+        if(mAuth.getCurrentUser() != null){
+            DatabaseReference ref = FirebaseDatabase.getInstance().getReference("profiles").child(mAuth.getCurrentUser().getUid());
+            ref.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    SharedPreferences sharedPref = getSharedPreferences("userInfo", Context.MODE_PRIVATE);
+                    SharedPreferences.Editor editor = sharedPref.edit();
+
+                    editor.putString("userType", dataSnapshot.child("type").getValue(String.class));
+                    editor.apply();
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+        }
+
+
+
 
 
         gotoRegister = (Button) findViewById(R.id.btnBackToRegister);

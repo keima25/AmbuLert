@@ -100,7 +100,7 @@ public class TrackerService extends Service {
                     if (location != null) {
                         Log.d(TAG, "location update " + location);
                         locationRef.setValue(location);
-                        Toast.makeText(getApplicationContext(), "Location Updated", Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(getApplicationContext(), "Location Updated", Toast.LENGTH_SHORT).show();
                     }
                 }
             }, null);

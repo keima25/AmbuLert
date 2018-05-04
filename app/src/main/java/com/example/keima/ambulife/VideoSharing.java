@@ -1,5 +1,8 @@
 package com.example.keima.ambulife;
 
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -50,6 +53,21 @@ public class VideoSharing extends AppCompatActivity implements Connector.IConnec
     }
 
     public void onDisconnected(Connector.ConnectorDisconnectReason connectorDisconnectReason) {
+
+    }
+
+    @Override
+    public void onBackPressed() {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Exit Video Chat?")
+                .setCancelable(true)
+                .setPositiveButton("Exit", new DialogInterface.OnClickListener() {
+                    public void onClick(final DialogInterface dialog, final int id) {
+                        finish();
+                    }
+                });
+        final AlertDialog alert = builder.create();
+        alert.show();
 
     }
 }
