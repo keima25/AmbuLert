@@ -80,11 +80,13 @@
             android:enabled="true"
             android:exported="true" />
 
-        <activity android:name=".TrackerActivity"></activity>
-
+        <activity android:name=".TrackerActivity" />
         <activity
             android:name=".PictureSharing"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"></activity>
+
+        <activity android:name=".VideoSharing" android:exported="true">
+
         </activity>
     </application>
 
