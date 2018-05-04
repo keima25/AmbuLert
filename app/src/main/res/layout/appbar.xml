@@ -4,6 +4,6 @@
     android:layout_height="wrap_content"
     android:id="@+id/appbar"
     android:minHeight="?attr/actionBarSize"
-    android:background="@color/colorBackground"
+    android:background="@drawable/side_nav_bar"
     android:theme="@style/ThemeOverlay.AppCompat.Dark"
     xmlns:android="http://schemas.android.com/apk/res/android"></android.support.v7.widget.Toolbar>
