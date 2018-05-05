@@ -34,6 +34,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.gms.vision.Tracker;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -167,6 +168,8 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Google
     }
 
 
+    // This method will get the last_known_location from the database
+    // and set the pass the result to the setMarker()
     private void subscribeToUpdates() {
         user = FirebaseAuth.getInstance().getCurrentUser();
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference("profiles")
@@ -187,11 +190,6 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Google
 
 
     private void setMarker(DataSnapshot dataSnapshot) {
-
-//        SharedPreferences pref = getContext().getSharedPreferences("userInfo", Context.MODE_PRIVATE);
-//
-//        String type = pref.getString("userType", "");
-
         // When a location update is received, put or update
         // its value in mMarkers, which contains all the markers
         // for locations received, so that we can build the
@@ -220,21 +218,13 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Google
 
                 // Add the marker and move the camera to the user coordinates
                 mMarkers.put(key, mMap.addMarker(new MarkerOptions().title(address).position(location)
-                        .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_user_marker))));
+                        .icon(BitmapDescriptorFactory.fromResource(R.mipmap.icon_user_marker))));
 
             }
             else {
-                // Add the marker and move the camera to the user coordinates
-                mMarkers.get(key).setPosition(location);
-                try {
-                    List<Address> addressList = geocoder.getFromLocation(location.latitude, location.longitude, 1);
-                    String address = addressList.get(0).getSubLocality() + ", " + addressList.get(0).getLocality() + ",";
-                    address += addressList.get(0).getCountryName();
 
-                    updateLocationOnDatabase(locationReference, location);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                // Get the marker from mMarkers and move the camera to the user coordinates
+                mMarkers.get(key).setPosition(location);
             }
 
             LatLngBounds.Builder builder = new LatLngBounds.Builder();
@@ -246,14 +236,33 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Google
 
     }
 
+
+    // This is to check if a Service is running
+    private boolean isMyServiceRunning(Class<?> serviceClass, Context context) {
+        ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                Log.i("Service already", "running");
+                return true;
+            }
+        }
+        Log.i("Service not", "running");
+        return false;
+    }
+
     @Override
     public void onResume() {
         super.onResume();
 
         MapInterface mi = new MapInterface();
         mi.showCallButton();
+
+        if(!isMyServiceRunning(TrackerService.class, getContext())){
+            getContext().startService(new Intent(getContext(), TrackerService.class));
+        }
     }
 
+    // This override method is executed once a marker has been clicked
     @Override
     public boolean onMarkerClick(Marker marker) {
         final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
@@ -269,4 +278,6 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Google
 
         return false;
     }
+
+
 }

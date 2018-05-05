@@ -1,6 +1,7 @@
 package com.example.keima.ambulife;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -15,6 +16,8 @@ import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
@@ -22,6 +25,8 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 public class RegisterScreen extends AppCompatActivity{
 
@@ -204,11 +209,30 @@ public class RegisterScreen extends AppCompatActivity{
                     reghandler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            Intent intent = new Intent(RegisterScreen.this, SigninScreen.class);
-                            startActivity(intent);
-                            finish();
+                            final FirebaseUser current_user = FirebaseAuth.getInstance().getCurrentUser();
+                            final StorageReference file_storage = FirebaseStorage.getInstance().getReference("SelfiesWithValidID");
+
+                            // This code block checks if there is a validation folder under the current user
+                            // If there's no folder found, create a new folder for the validation picture
+                            file_storage.child(current_user.getUid()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                @Override
+                                public void onSuccess(Uri uri) {
+                                    // Folder exists
+                                    Intent intent = new Intent(RegisterScreen.this, SigninScreen.class);
+                                    startActivity(intent);
+                                    finish();
+                                }
+                            }).addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception exception) {
+                                    // Folder not found
+                                    Intent intent = new Intent(RegisterScreen.this, SelfieValidation.class);
+                                    startActivity(intent);
+                                    finish();
+                                }
+                            });
                         }
-                    }, 2000);
+                    }, 2000); // END of reghandler
 
 
                 } else {

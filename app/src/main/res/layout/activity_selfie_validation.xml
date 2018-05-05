@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="center"
+    android:animateLayoutChanges="true"
+    android:background="@drawable/side_nav_bar"
+    android:orientation="vertical"
+    tools:context="com.example.keima.ambulife.SelfieValidation">
+
+
+    <LinearLayout
+        android:id="@+id/nextStepScreen"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:animateLayoutChanges="true"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/skipText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorWhite"
+            android:text="I'll do it later (Skip)"
+            android:layout_marginTop="20dp"
+            android:layout_marginRight="20dp"
+            android:textSize="15sp"
+            android:padding="5dp"
+            android:layout_gravity="right"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="130dp"
+            android:padding="5dp"
+            android:text="Next Step: Verification"
+            android:textColor="@color/colorWhite"
+            android:textSize="20sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="5dp"
+            android:paddingEnd="25dp"
+            android:paddingStart="25dp"
+            android:paddingTop="20dp"
+            android:textAlignment="center"
+            android:text="@string/next_step_validation"
+            android:textColor="@color/colorWhite"
+            android:textSize="15sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="50dp"
+            android:text="Tap screen to continue"
+            android:textColor="@color/colorWhite" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="10dp"
+            android:padding="5dp"
+            android:scaleX="2"
+            android:scaleY="2"
+            android:src="@drawable/icon_next" />
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/verificationScreen"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:animateLayoutChanges="true"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="40dp"
+            android:padding="5dp"
+            android:text="Take a &quot;Selfie&quot; together with your Valid ID"
+            android:textAllCaps="true"
+            android:textColor="@color/colorWhite"
+            android:textSize="13sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="10dp"
+            android:padding="3dp"
+            android:text="Please tap the camera icon to launch the camera."
+            android:textColor="@color/colorWhite" />
+
+        <ImageButton
+            android:id="@+id/selfieCameraBtn"
+            android:layout_width="336dp"
+            android:layout_height="350dp"
+            android:layout_gravity="center_horizontal"
+            android:cropToPadding="false"
+            app:layout_constraintBottom_toTopOf="@+id/call"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_menu_camera" />
+
+        <LinearLayout
+            android:id="@+id/actionView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:animateLayoutChanges="true"
+            android:orientation="horizontal"
+            android:visibility="gone"
+            android:weightSum="2">
+
+            <Button
+                android:id="@+id/submitBtn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="10dp"
+                android:layout_marginLeft="23dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginStart="23dp"
+                android:layout_marginTop="15dp"
+                android:layout_weight="1"
+                android:background="@color/colorButtonMainRed"
+                android:text="Submit Photo"
+                android:textColor="@color/colorWhite" />
+
+            <Button
+                android:id="@+id/cancelBtn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="23dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="23dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="15dp"
+                android:layout_weight="1"
+                android:background="@color/colorButtonMainRed"
+                android:text="Cancel"
+                android:textColor="@color/colorWhite" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

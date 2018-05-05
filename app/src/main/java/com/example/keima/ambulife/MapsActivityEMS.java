@@ -1,6 +1,7 @@
 package com.example.keima.ambulife;
 
 
+import android.app.ActivityManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -219,17 +220,9 @@ public class MapsActivityEMS extends Fragment implements OnMapReadyCallback, Goo
 
             }
             else {
-                // Add the marker and move the camera to the user coordinates
-                mMarkers.get(key).setPosition(location);
-                try {
-                    List<Address> addressList = geocoder.getFromLocation(location.latitude, location.longitude, 1);
-                    String address = addressList.get(0).getSubLocality() + ", " + addressList.get(0).getLocality() + ",";
-                    address += addressList.get(0).getCountryName();
 
-                    updateLocationOnDatabase(locationReference, location);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                // Get the marker from mMarkers and move the camera to the user coordinates
+                mMarkers.get(key).setPosition(location);
             }
 
             LatLngBounds.Builder builder = new LatLngBounds.Builder();
@@ -241,12 +234,29 @@ public class MapsActivityEMS extends Fragment implements OnMapReadyCallback, Goo
 
     }
 
+    // This is to check if a Service is running
+    private boolean isMyServiceRunning(Class<?> serviceClass, Context context) {
+        ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                Log.i("Service already", "running");
+                return true;
+            }
+        }
+        Log.i("Service not", "running");
+        return false;
+    }
+
     @Override
     public void onResume() {
         super.onResume();
 
         MapInterface mi = new MapInterface();
         mi.showCallButton();
+
+        if(!isMyServiceRunning(TrackerService.class, getContext())){
+            getContext().startService(new Intent(getContext(), TrackerService.class));
+        }
     }
 
     @Override

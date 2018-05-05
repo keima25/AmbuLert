@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -17,6 +18,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
@@ -26,6 +29,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import static android.view.View.GONE;
 
@@ -106,24 +111,56 @@ public class SigninScreen extends AppCompatActivity {
         signin_username.setVisibility(GONE);
         signin_password.setVisibility(GONE);
 
-        signinText.setText("Welcome, "+user.getDisplayName());
+        signinText.setText("Welcome, "+user.getEmail());
         signinText2.setVisibility(View.VISIBLE);
         gotoRegister.setText("Sign out");
 
-        // btnSignin will now automatically sign in user
-        btnSignin.setOnClickListener(new View.OnClickListener() {
+        final FirebaseUser current_user = FirebaseAuth.getInstance().getCurrentUser();
+        final StorageReference file_storage = FirebaseStorage.getInstance().getReference("SelfiesWithValidID");
+
+        // This code block checks if there is a validation folder under the current user
+        // If there's no folder found, create a new folder for the validation picture
+        file_storage.child(current_user.getUid()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(SigninScreen.this, TrackerActivity.class);
-                startActivity(intent);
-                finish();
+            public void onSuccess(Uri uri) {
+                // Folder exists
+                // btnSignin will now automatically sign in user
+                btnSignin.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent intent = new Intent(SigninScreen.this, TrackerActivity.class);
+                        startActivity(intent);
+                        finish();
+                    }
+                });
+                // gotoRegister will now become sign out button
+                gotoRegister.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        signOutUser();
+                    }
+                });
             }
-        });
-        // gotoRegister will now become sign out button
-        gotoRegister.setOnClickListener(new View.OnClickListener() {
+        }).addOnFailureListener(new OnFailureListener() {
             @Override
-            public void onClick(View view) {
-                signOutUser();
+            public void onFailure(@NonNull Exception exception) {
+                // Folder not found
+                // btnSignin will now automatically sign in user
+                btnSignin.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent intent = new Intent(SigninScreen.this, SelfieValidation.class);
+                        startActivity(intent);
+                        finish();
+                    }
+                });
+                // gotoRegister will now become sign out button
+                gotoRegister.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        signOutUser();
+                    }
+                });
             }
         });
 
