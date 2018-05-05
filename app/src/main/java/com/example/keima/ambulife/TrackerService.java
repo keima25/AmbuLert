@@ -44,8 +44,15 @@ public class TrackerService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        buildNotification();
-        requestLocationUpdates();
+
+        FirebaseUser curUser = FirebaseAuth.getInstance().getCurrentUser();
+        if(curUser != null){
+            buildNotification();
+            requestLocationUpdates();
+        }
+        else{
+            stopSelf();
+        }
     }
 
     private void buildNotification() {

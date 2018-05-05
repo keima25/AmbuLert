@@ -1,5 +1,6 @@
 package com.example.keima.ambulife;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -62,27 +63,9 @@ public class SigninScreen extends AppCompatActivity {
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
 
 
-
-        if(mAuth.getCurrentUser() != null){
-            DatabaseReference ref = FirebaseDatabase.getInstance().getReference("profiles").child(mAuth.getCurrentUser().getUid());
-            ref.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    SharedPreferences sharedPref = getSharedPreferences("userInfo", Context.MODE_PRIVATE);
-                    SharedPreferences.Editor editor = sharedPref.edit();
-
-                    editor.putString("userType", dataSnapshot.child("type").getValue(String.class));
-                    editor.apply();
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-
-                }
-            });
-        }
-
-
+        SharedPreferences shared = getSharedPreferences("userInfo", MODE_PRIVATE);
+        shared.edit().clear();
+        shared.edit().commit();
 
 
 

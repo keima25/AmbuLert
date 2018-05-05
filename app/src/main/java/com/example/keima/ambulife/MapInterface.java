@@ -6,6 +6,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.net.Uri;
@@ -111,17 +112,69 @@ public class MapInterface extends AppCompatActivity implements NavigationView.On
 
         updateService("start");
 
-        // Map Fragment on Start
-        Fragment fragment = null;
-        fragment = new MapsActivity();
-        if (fragment != null) {
-            FragmentManager fragmentManager = getSupportFragmentManager();
-            FragmentTransaction ft = fragmentManager.beginTransaction();
+        final ProgressDialog pd = new ProgressDialog(this);
+        pd.setMessage("Loading");
+        pd.show();
 
-            ft.replace(R.id.screen_area, fragment);
-            ft.commit();
-        }
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        DatabaseReference typeRef = FirebaseDatabase.getInstance().getReference("profiles").child(user.getUid()).child("type");
 
+        readData(typeRef, new OnGetDataListener() {
+            @Override
+            public void onSuccess(DataSnapshot dataSnapshot) {
+                Fragment fragment = null;
+
+                if(dataSnapshot.getValue(String.class).equals("USER"))
+                { fragment = new MapsActivity();}
+                else
+                { fragment = new MapsActivityEMS();}
+
+
+                pd.dismiss();
+                FragmentManager fragmentManager = getSupportFragmentManager();
+                FragmentTransaction ft = fragmentManager.beginTransaction();
+
+                ft.replace(R.id.screen_area, fragment);
+                ft.commit();
+            }
+
+            @Override
+            public void onStart() {
+                //when starting
+                Log.d("ONSTART", "Started");
+                Toast.makeText(MapInterface.this, "Started", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onFailure() {
+                Log.d("onFailure", "Failed");
+                Toast.makeText(MapInterface.this, "Failed", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+    }
+
+    public interface OnGetDataListener {
+        //this is for callbacks
+        void onSuccess(DataSnapshot dataSnapshot);
+        void onStart();
+        void onFailure();
+    }
+
+    public void readData(DatabaseReference ref, final OnGetDataListener listener) {
+        listener.onStart();
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                listener.onSuccess(dataSnapshot);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                listener.onFailure();
+            }
+
+        });
 
     }
 
@@ -340,6 +393,5 @@ public class MapInterface extends AppCompatActivity implements NavigationView.On
         super.onDestroy();
        updateService("stop");
     }
-
 
 }

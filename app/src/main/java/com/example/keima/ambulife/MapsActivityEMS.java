@@ -1,20 +1,18 @@
 package com.example.keima.ambulife;
 
 
-import android.app.ActivityManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
+import android.graphics.Camera;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.LocationManager;
-import android.os.Handler;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -26,7 +24,6 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
@@ -43,8 +40,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.karan.churi.PermissionManager.PermissionManager;
 
-import org.xml.sax.ErrorHandler;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -52,13 +47,13 @@ import java.util.List;
 
 import static android.content.Context.LOCATION_SERVICE;
 
-public class MapsActivity extends Fragment implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener{
+public class MapsActivityEMS extends Fragment implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener{
 
     private GoogleMap mMap;
     private LocationManager mLocationManager;
     private PermissionManager permissionManager;
     private Geocoder geocoder;
-    private static final String TAG = MapsActivity.class.getSimpleName();
+    private static final String TAG = MapsActivityEMS.class.getSimpleName();
     private HashMap<String, Marker> mMarkers = new HashMap<>();
 
     FirebaseUser user;
@@ -95,12 +90,13 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Google
 
         statusCheck();
 
-        Toast.makeText(getContext(), "USER MAP", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getContext(), "EMS MAP", Toast.LENGTH_SHORT).show();
+
 
         // Initialize the map
         Log.d(TAG, "initMap: initializing map");
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
-        mapFragment.getMapAsync(MapsActivity.this);
+        mapFragment.getMapAsync(MapsActivityEMS.this);
 
     }
 
@@ -162,7 +158,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Google
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         mMap.getUiSettings().setMapToolbarEnabled(false);
-        mMap.setMaxZoomPreference(20);
+        mMap.setMaxZoomPreference(18);
         subscribeToUpdates();
     }
 
@@ -188,23 +184,21 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Google
 
     private void setMarker(DataSnapshot dataSnapshot) {
 
-//        SharedPreferences pref = getContext().getSharedPreferences("userInfo", Context.MODE_PRIVATE);
-//
-//        String type = pref.getString("userType", "");
-
         // When a location update is received, put or update
         // its value in mMarkers, which contains all the markers
         // for locations received, so that we can build the
         // boundaries required to show them all on the map at once
         String key;
-        double lat_marker;
-        double lng_marker;
+        double lat;
+        double lng;
         LatLng location;
 
         key = dataSnapshot.getKey();
-        lat_marker = dataSnapshot.child("latitude").getValue(Double.class);
-        lng_marker = dataSnapshot.child("longitude").getValue(Double.class);
-        location = new LatLng(lat_marker, lng_marker);
+        lat = dataSnapshot.child("latitude").getValue(Double.class);
+        lng = dataSnapshot.child("longitude").getValue(Double.class);
+        location = new LatLng(lat, lng);
+
+
 
             if (!mMarkers.containsKey(key)) {
                 String address = "";
@@ -219,8 +213,9 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Google
                 }
 
                 // Add the marker and move the camera to the user coordinates
-                mMarkers.put(key, mMap.addMarker(new MarkerOptions().title(address).position(location)
-                        .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_user_marker))));
+                mMarkers.put(key, mMap.addMarker(new MarkerOptions().title(address)
+                        .position(location)
+                        .icon(BitmapDescriptorFactory.fromResource(R.mipmap.icon_ems_marker))));
 
             }
             else {
