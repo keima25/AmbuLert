@@ -117,10 +117,11 @@ public class SigninScreen extends AppCompatActivity {
 
         final FirebaseUser current_user = FirebaseAuth.getInstance().getCurrentUser();
         final StorageReference file_storage = FirebaseStorage.getInstance().getReference("SelfiesWithValidID");
+        final String storage_file_name = "Selfie_Validation_"+current_user.getUid();
 
         // This code block checks if there is a validation folder under the current user
         // If there's no folder found, create a new folder for the validation picture
-        file_storage.child(current_user.getUid()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+        file_storage.child(current_user.getUid()).child(storage_file_name).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
             public void onSuccess(Uri uri) {
                 // Folder exists

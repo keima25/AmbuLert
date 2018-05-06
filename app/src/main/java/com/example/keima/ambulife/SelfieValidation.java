@@ -2,6 +2,7 @@ package com.example.keima.ambulife;
 
 import android.animation.LayoutTransition;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Environment;
@@ -34,7 +35,11 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
 
+import org.xml.sax.ErrorHandler;
+
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -107,13 +112,14 @@ public class SelfieValidation extends AppCompatActivity {
                 final Uri uri = PicUri;
                 final FirebaseUser current_user = FirebaseAuth.getInstance().getCurrentUser();
                 final StorageReference file_storage = FirebaseStorage.getInstance().getReference("SelfiesWithValidID");
+                final String storage_file_name = "Selfie_Validation_"+current_user.getUid();
 
                 progressDialog.setMessage("Uploading");
                 progressDialog.show();
 
                 // This code block checks if there is a validation folder under the current user
                 // If there's no folder found, create a new folder for the validation picture
-                file_storage.child(current_user.getUid()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                file_storage.child(current_user.getUid()).child(storage_file_name).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                     @Override
                     public void onSuccess(Uri uri) {
                         // Folder exists
@@ -124,23 +130,25 @@ public class SelfieValidation extends AppCompatActivity {
                     @Override
                     public void onFailure(@NonNull Exception exception) {
                         // Folder not found
-                        //Create new folder
+                        //Create new folder > new image file
                         StorageReference newFolderReference = FirebaseStorage.getInstance().getReference("SelfiesWithValidID")
                                 .child(current_user.getUid())
-                                .child(uri.getLastPathSegment());
+                                .child(storage_file_name);
 
                         newFolderReference.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                             @Override
                             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                            progressDialog.dismiss();
-//                                Uri downloadUri = taskSnapshot.getDownloadUrl();
-//                                Picasso.get().load(downloadUri).fit().centerCrop().into();
+                                progressDialog.dismiss();
 
                                 Toast.makeText(SelfieValidation.this, "Photo successfully uploaded. Thank you for validating your account."
                                         ,Toast.LENGTH_LONG).show();
 
+                                startActivity(new Intent(SelfieValidation.this, TrackerActivity.class));
+                                finish();
                             }
                         });
+
+
                     }
                 });
 
@@ -170,7 +178,7 @@ public class SelfieValidation extends AppCompatActivity {
     }
 
     private File getOutputMediaFile(int type) {
-        File mediaStorage = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "Application");
+        File mediaStorage = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "Ambulert_Images");
 
         if (!mediaStorage.exists()){
             if (!mediaStorage.mkdirs()){

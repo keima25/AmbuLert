@@ -1,66 +1,76 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/side_nav_bar"
+    android:orientation="vertical"
+    android:padding="20dp"
     tools:context=".PictureSharing">
 
-    <Button
-        android:id="@+id/call"
-        android:layout_marginLeft="25dp"
-        android:layout_marginRight="25dp"
-        android:layout_width="match_parent"
+    <TextView
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Call 911"
+        android:layout_gravity="center"
+        android:text="Emergency Call"
         android:textColor="@color/colorWhite"
-        android:background="@color/colorButtonMainRed"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageButton" />
+        android:textSize="15dp" />
 
     <ImageButton
         android:id="@+id/imageButton"
         android:layout_width="336dp"
         android:layout_height="300dp"
-        android:layout_marginBottom="100dp"
+        android:layout_gravity="center"
         android:layout_marginEnd="11dp"
         android:layout_marginLeft="11dp"
         android:layout_marginRight="11dp"
         android:layout_marginStart="11dp"
         android:layout_marginTop="8dp"
         android:cropToPadding="false"
-        app:layout_constraintBottom_toTopOf="@+id/call"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_menu_camera" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="Tap  the camera icon to capture an image"
+        android:textColor="@color/colorWhite" />
 
     <android.support.design.widget.TextInputLayout
         android:id="@+id/textInputLayout2"
-        android:layout_width="298dp"
-        android:layout_height="150dp"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginTop="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/call"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.351"
-        app:layout_constraintStart_toStartOf="@+id/imageButton"
-        app:layout_constraintTop_toBottomOf="@+id/imageButton"
+        android:layout_width="match_parent"
+        android:layout_height="120dp"
+        android:layout_gravity="center"
+        android:layout_marginEnd="11dp"
+        android:layout_marginLeft="11dp"
+        android:layout_marginRight="11dp"
+        android:layout_marginStart="11dp"
         app:layout_constraintVertical_bias="0.588">
 
         <EditText
             android:id="@+id/editText"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="1"
             android:layout_marginBottom="10dp"
+            android:layout_weight="1"
+            android:background="@color/colorWhite"
             android:ems="10"
-            android:hint="Remarks:"
-            android:inputType="textPersonName" />
+            android:hint="Additional information..."
+            android:inputType="textPersonName"
+            android:padding="10dp" />
     </android.support.design.widget.TextInputLayout>
 
-</android.support.constraint.ConstraintLayout>
+    <Button
+        android:id="@+id/call"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="11dp"
+        android:layout_marginLeft="11dp"
+        android:layout_marginRight="11dp"
+        android:layout_marginStart="11dp"
+        android:background="@color/colorButtonMainRed"
+        android:text="Call 911"
+        android:textColor="@color/colorWhite" />
+
+</LinearLayout>

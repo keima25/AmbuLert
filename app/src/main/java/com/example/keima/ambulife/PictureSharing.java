@@ -41,6 +41,7 @@ import com.squareup.picasso.Picasso;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Random;
 
 public class PictureSharing extends AppCompatActivity {
 
@@ -165,16 +166,22 @@ public class PictureSharing extends AppCompatActivity {
         Long tsLong = System.currentTimeMillis() / 1000;
         final String timestamp = tsLong.toString();
 
+        SimpleDateFormat s = new SimpleDateFormat("dd/MM/yyyy/hh:mm:ss");
+        final String format = s.format(new Date());
+
+
         // Get current location from database
         profile.child("last_known_location").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 final LatLng latLng = new LatLng(
-                        dataSnapshot.child("latitude").getValue(Long.class),
-                        dataSnapshot.child("longitude").getValue(Long.class)
+                        dataSnapshot.child("latitude").getValue(Double.class),
+                        dataSnapshot.child("longitude").getValue(Double.class)
                 );
+                Random random = new Random();
+                long call_id = random.nextInt( 9999999 - 1 + 1) + 1;
 
-                DatabaseReference dbref = FirebaseDatabase.getInstance().getReference("ongoing_calls").child(user.getUid());
+                DatabaseReference dbref = FirebaseDatabase.getInstance().getReference("ongoing_calls").child(user.getUid()).child("call_id_"+String.valueOf(call_id));
 
                 dbref.child("call_last_known_location").setValue(latLng).addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
@@ -183,10 +190,10 @@ public class PictureSharing extends AppCompatActivity {
                     }
                 });
 
-                dbref.child("caller_id").setValue(user.getUid()).addOnCompleteListener(new OnCompleteListener<Void>() {
+                dbref.child("call_date_time").setValue(format).addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
-                        Log.i("On_Call:", "Saved Caller Id");
+                        Log.i("On_Call", "Saved datetime");
                     }
                 });
 
