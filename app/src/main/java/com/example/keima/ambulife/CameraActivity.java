@@ -27,6 +27,7 @@ import android.util.Log;
 import android.util.SparseArray;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 import android.Manifest;
@@ -56,7 +57,7 @@ import permissions.dispatcher.RuntimePermissions;
 
 public class CameraActivity extends AppCompatActivity {
 
-    ImageView cameraView;
+    ImageButton cameraView;
     Button cameraButton, cancelButton;
     ProgressDialog progress;
     private static final int CAMERA_REQUEST_CODE = 1;
