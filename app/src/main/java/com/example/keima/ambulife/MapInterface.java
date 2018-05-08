@@ -1,5 +1,7 @@
 package com.example.keima.ambulife;
 
+import android.*;
+import android.Manifest;
 import android.app.ActivityManager;
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -48,6 +50,7 @@ import com.karan.churi.PermissionManager.PermissionManager;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Map;
 
 public class MapInterface extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -56,7 +59,7 @@ public class MapInterface extends AppCompatActivity implements NavigationView.On
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mToggle;
     private android.support.v7.widget.Toolbar appbar;
-    public static FloatingActionButton fab;
+    public static FloatingActionButton fab, fabSendSMS;
     private final static String EMERGENCY_NUMBER = "1234567890";
     private TextView nav_view_email, nav_view_name;
     ProgressBar progressBar;
@@ -83,6 +86,7 @@ public class MapInterface extends AppCompatActivity implements NavigationView.On
 
         //Floating action button id. This serves as the call button
         fab = (FloatingActionButton) findViewById(R.id.fab);
+        fabSendSMS = (FloatingActionButton) findViewById(R.id.fabSendSMS);
 
         //Get drawerLayout ID
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -110,6 +114,13 @@ public class MapInterface extends AppCompatActivity implements NavigationView.On
             }
         });
 
+        // Floating action button SEND SMS
+        fabSendSMS.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialogSendSms();
+            }
+        });
 
 
         final ProgressDialog pd = new ProgressDialog(this);
@@ -230,6 +241,37 @@ public class MapInterface extends AppCompatActivity implements NavigationView.On
 
         mDrawerLayout.closeDrawers();
         return false;
+    }
+
+
+    private void dialogSendSms(){
+
+        // Initialize dialog
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Send an emergency sms to nearby EMS? \n Note: The message will contain your current location. Do you want to proceed?")
+                .setCancelable(false)
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    public void onClick(final DialogInterface dialog, final int id) {
+                        dialog.dismiss();
+                    }
+                })
+                .setPositiveButton("Request Help!", new DialogInterface.OnClickListener() {
+                    public void onClick(final DialogInterface dialog, final int id) {
+                        // Create a new Intent for the call service
+                        Intent call_intent = new Intent(Intent.ACTION_CALL);
+
+                        if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED) {
+                            Toast.makeText(MapInterface.this, "Send SMS permission is not granted. Please enable it in your settings.", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                        // Send message
+                        startActivity(new Intent(MapInterface.this, Sms.class));
+                    }
+                });
+
+        // Show Alert Dialog
+        final AlertDialog callAlertDialog = builder.create();
+        callAlertDialog.show();
     }
 
 //    public void call(String number) {
