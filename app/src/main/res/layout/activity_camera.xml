@@ -11,35 +11,47 @@
     android:paddingRight="10dp"
     android:paddingStart="10dp"
     android:paddingTop="10dp"
-    android:weightSum="10"
     tools:context="com.example.keima.ambulife.CameraActivity">
 
 
-    <ImageView
-        android:id="@+id/cameraView"
+
+    <TextView
+        android:layout_marginTop="30dp"
         android:layout_width="match_parent"
-        android:layout_height="fill_parent"
-        android:layout_weight="8" />
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:text="Tap the camera icon to take picture."/>
+
+    <ImageButton
+        android:id="@+id/cameraView"
+        android:layout_width="330dp"
+        android:layout_height="330dp"
+        android:layout_gravity="center"
+        android:src="@drawable/ic_menu_camera"
+        />
 
     <Button
         android:id="@+id/cameraBtn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="2dp"
-        android:layout_weight="1"
+        android:layout_marginLeft="4dp"
+        android:layout_marginRight="4dp"
         android:background="@color/colorButtonMainRed"
-        android:text="Take Selfie"
+        android:text="Open Camera"
         android:textColor="@color/colorWhite" />
 
     <Button
         android:id="@+id/cancelBtn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="2dp"
-        android:layout_weight="1"
+        android:layout_marginTop="5dp"
+        android:layout_marginLeft="4dp"
+        android:layout_marginRight="4dp"
         android:background="@color/colorButtonMainRed"
         android:text="Cancel"
         android:textColor="@color/colorWhite"
-        android:visibility="gone" />
+        android:visibility="visible" />
 
 </LinearLayout>

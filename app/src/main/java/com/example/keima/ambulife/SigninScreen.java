@@ -1,6 +1,8 @@
 package com.example.keima.ambulife;
 
 import android.app.ProgressDialog;
+import android.app.usage.NetworkStats;
+import android.app.usage.NetworkStatsManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -165,6 +167,14 @@ public class SigninScreen extends AppCompatActivity {
             }
         });
 
+
+        // gotoRegister will now become sign out button
+        gotoRegister.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                signOutUser();
+            }
+        });
     }
 
 
