@@ -70,6 +70,9 @@ public class MapInterface extends AppCompatActivity implements NavigationView.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map_interface);
 
+        MapsActivity.mapInterface = this;
+        MapsActivityEMS.mapInterface = this;
+
         // Initialize Permission Manager
         permissionManager = new PermissionManager() {
         };
@@ -153,7 +156,7 @@ public class MapInterface extends AppCompatActivity implements NavigationView.On
             public void onStart() {
                 //when starting
                 Log.d("ONSTART", "Started");
-                Toast.makeText(MapInterface.this, "Started", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(MapInterface.this, "Started", Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -165,7 +168,7 @@ public class MapInterface extends AppCompatActivity implements NavigationView.On
 
     }
 
-    //Create Interface for Callbacks
+    // Create Interface for Callbacks
     public interface OnGetDataListener {
         //this is for callbacks
         void onSuccess(DataSnapshot dataSnapshot);
@@ -188,6 +191,7 @@ public class MapInterface extends AppCompatActivity implements NavigationView.On
 
         });
     }
+    // // // // //
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -248,7 +252,7 @@ public class MapInterface extends AppCompatActivity implements NavigationView.On
 
         // Initialize dialog
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage("Send an emergency sms to nearby EMS? \n Note: The message will contain your current location. Do you want to proceed?")
+        builder.setMessage("Send an emergency sms to nearby EMS? \nNote: The message will contain your current location. Do you want to proceed?")
                 .setCancelable(false)
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                     public void onClick(final DialogInterface dialog, final int id) {
@@ -273,113 +277,6 @@ public class MapInterface extends AppCompatActivity implements NavigationView.On
         final AlertDialog callAlertDialog = builder.create();
         callAlertDialog.show();
     }
-
-//    public void call(String number) {
-//        final String callnumber = number;
-//
-//        // Initialize dialog
-//        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-//        builder.setMessage("Your are about to call 911. Please note that your location will be automatically detected.")
-//                .setCancelable(false)
-//                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-//                    public void onClick(final DialogInterface dialog, final int id) {
-//                        dialog.cancel();
-//                    }
-//                })
-//                .setPositiveButton("Proceed", new DialogInterface.OnClickListener() {
-//                    public void onClick(final DialogInterface dialog, final int id) {
-//                        // Create a new Intent for the call service
-//                        Intent call_intent = new Intent(Intent.ACTION_CALL);
-//                        call_intent.setData(Uri.parse("tel:" + callnumber));
-//
-//                        if (ActivityCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
-//                            return;
-//                        }
-//                        startCallSession();
-//                        startActivity(call_intent);
-//                    }
-//                });
-//
-//        // Show Alert Dialog
-//        final AlertDialog callAlertDialog = builder.create();
-//        callAlertDialog.show();
-//
-//    }
-
-//    private void startCallSession() {
-//
-//        final FirebaseUser currentUser = mAuth.getCurrentUser();
-//        DatabaseReference profile = FirebaseDatabase.getInstance().getReference("profiles").child(currentUser.getUid());
-//
-//        // Get current timestamp
-//        Long tsLong = System.currentTimeMillis() / 1000;
-//        final String timestamp = tsLong.toString();
-//
-//        // Get current location from database
-//        profile.child("last_known_location").addListenerForSingleValueEvent(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(DataSnapshot dataSnapshot) {
-//
-//                double lat = dataSnapshot.child("latitude").getValue(Double.class);
-//                double lng = dataSnapshot.child("longitude").getValue(Double.class);
-//                final LatLng curLocation = new LatLng(lat, lng);
-//
-//                DatabaseReference dbref = FirebaseDatabase.getInstance().getReference("ongoing_calls").child(currentUser.getUid());
-//
-//                dbref.child("caller_id").setValue(currentUser.getUid()).addOnCompleteListener(new OnCompleteListener<Void>() {
-//                    @Override
-//                    public void onComplete(@NonNull Task<Void> task) {
-//                        Log.i("On_Call:", "Saved Caller Id");
-//                    }
-//                });
-//
-//                dbref.child("call_timestamp").setValue(timestamp).addOnCompleteListener(new OnCompleteListener<Void>() {
-//                    @Override
-//                    public void onComplete(@NonNull Task<Void> task) {
-//                        Log.i("On_Call", "Saved timestamp");
-//                    }
-//                });
-//
-//                dbref.child("call_last_known_location").setValue(curLocation).addOnCompleteListener(new OnCompleteListener<Void>() {
-//                    @Override
-//                    public void onComplete(@NonNull Task<Void> task) {
-//                        Log.i("On_Call:", "Saved Location" + curLocation);
-//                    }
-//                });
-//            }
-//
-//            @Override
-//            public void onCancelled(DatabaseError databaseError) {
-//
-//            }
-//
-//        });
-//    }
-
-
-    // This method checks checks everytime the service is stopped while in app
-    // and starts it again
-//    private void updateService(String action) {
-//        final Handler mUpdater = new Handler();
-//        Runnable mUpdateView = new Runnable() {
-//            @Override
-//            public void run() {
-//                if (!isMyServiceRunning(TrackerService.class, getApplicationContext())) {
-//                    startService(new Intent(getApplicationContext(), TrackerService.class));
-//                }
-//                mUpdater.postDelayed(this, 3000);
-//            }
-//        };
-//
-//        if(action == "start")
-//        { mUpdateView.run();}
-//
-//        if(action == "stop")
-//        {
-//            stopService(new Intent(this, TrackerService.class));
-//            mUpdater.removeCallbacks(mUpdateView);
-//        }
-//    }
 
     private boolean isMyServiceRunning(Class<?> serviceClass, Context context) {
         ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
@@ -427,7 +324,15 @@ public class MapInterface extends AppCompatActivity implements NavigationView.On
                 .setCancelable(true)
                 .setPositiveButton("Exit", new DialogInterface.OnClickListener() {
                     public void onClick(final DialogInterface dialog, final int id) {
-//                        updateService("stop");
+
+                        Fragment fragment = null;
+
+                        FragmentManager fm = getSupportFragmentManager();
+                        FragmentTransaction ft = fm.beginTransaction();
+
+                        ft.replace(R.id.screen_area, fragment);
+                        ft.commit();
+
                         stopService(new Intent(MapInterface.this, TrackerService.class));
                         finish();
                     }

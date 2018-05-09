@@ -2,6 +2,8 @@ package com.example.keima.ambulife;
 
 import android.app.Service;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.IBinder;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -83,8 +85,8 @@ public class TrackerService extends Service {
 
     private void requestLocationUpdates() {
         LocationRequest request = new LocationRequest();
-        request.setInterval(20000);
-        request.setFastestInterval(10000);
+        request.setInterval(10000);
+        request.setFastestInterval(3000);
         request.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         FusedLocationProviderClient client = LocationServices.getFusedLocationProviderClient(this);
 
@@ -94,24 +96,36 @@ public class TrackerService extends Service {
         if (permission == PackageManager.PERMISSION_GRANTED) {
             Toast.makeText(this, "Tracking current location", Toast.LENGTH_LONG).show();
 
-            // Request location updates and when an update is
-            // received, store the location in Firebase
-            client.requestLocationUpdates(request, new LocationCallback() {
-                @Override
-                public void onLocationResult(LocationResult locationResult) {
-                    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                    DatabaseReference locationRef = FirebaseDatabase.getInstance().getReference("profiles")
-                            .child(user.getUid()).child("last_known_location");
+            if(isNetworkAvailable()){
+                // Request location updates and when an update is
+                // received, store the location in Firebase
+                client.requestLocationUpdates(request, new LocationCallback() {
+                    @Override
+                    public void onLocationResult(LocationResult locationResult) {
+                        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                        if(user != null){
+                            DatabaseReference locationRef = FirebaseDatabase.getInstance().getReference("profiles")
+                                    .child(user.getUid()).child("last_known_location");
 
-                    Location location = locationResult.getLastLocation();
-                    if (location != null) {
-                        Log.d(TAG, "location update " + location);
-                        locationRef.setValue(location);
+                            Location location = locationResult.getLastLocation();
+                            if (location != null) {
+                                Log.d(TAG, "location update " + location);
+                                locationRef.setValue(location);
 //                        Toast.makeText(getApplicationContext(), "Location Updated", Toast.LENGTH_SHORT).show();
+                        }
+
+                        }
                     }
-                }
-            }, null);
+                }, null);
+            }
         }
+    }
+
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnectedOrConnecting();
     }
 
 

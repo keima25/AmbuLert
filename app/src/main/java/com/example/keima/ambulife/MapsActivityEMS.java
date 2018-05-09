@@ -1,6 +1,7 @@
 package com.example.keima.ambulife;
 
 
+import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -50,6 +51,7 @@ import static android.content.Context.LOCATION_SERVICE;
 
 public class MapsActivityEMS extends Fragment implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener{
 
+    public static Activity mapInterface;
     private GoogleMap mMap;
     private LocationManager mLocationManager;
     private PermissionManager permissionManager;
@@ -91,8 +93,7 @@ public class MapsActivityEMS extends Fragment implements OnMapReadyCallback, Goo
 
         statusCheck();
 
-        Toast.makeText(getContext(), "EMS MAP", Toast.LENGTH_SHORT).show();
-
+//        Toast.makeText(getContext(), "EMS MAP", Toast.LENGTH_SHORT).show();
 
         // Initialize the map
         Log.d(TAG, "initMap: initializing map");
@@ -267,6 +268,7 @@ public class MapsActivityEMS extends Fragment implements OnMapReadyCallback, Goo
                 .setPositiveButton("Continue", new DialogInterface.OnClickListener() {
                     public void onClick(final DialogInterface dialog, final int id) {
                         startActivity(new Intent(getContext(), VideoSharing.class));
+                        getActivity().finish();
                     }
                 });
         final AlertDialog alert = builder.create();

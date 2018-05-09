@@ -6,6 +6,8 @@ import android.app.usage.NetworkStatsManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -117,64 +119,114 @@ public class SigninScreen extends AppCompatActivity {
         signinText2.setVisibility(View.VISIBLE);
         gotoRegister.setText("Sign out");
 
+        if(isNetworkAvailable()){
         final FirebaseUser current_user = FirebaseAuth.getInstance().getCurrentUser();
         final StorageReference file_storage = FirebaseStorage.getInstance().getReference("SelfiesWithValidID");
         final String storage_file_name = "Selfie_Validation_"+current_user.getUid();
 
-        // This code block checks if there is a validation folder under the current user
-        // If there's no folder found, create a new folder for the validation picture
-        file_storage.child(current_user.getUid()).child(storage_file_name).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-            @Override
-            public void onSuccess(Uri uri) {
-                // Folder exists
-                // btnSignin will now automatically sign in user
-                btnSignin.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        Intent intent = new Intent(SigninScreen.this, TrackerActivity.class);
-                        startActivity(intent);
-                        finish();
+            // This code block checks if there is a validation folder under the current user
+            // If there's no folder found, create a new folder for the validation picture
+            file_storage.child(current_user.getUid()).child(storage_file_name).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                @Override
+                public void onSuccess(Uri uri) {
+                    // Folder exists
+                    // btnSignin will now automatically sign in user
+                    btnSignin.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            if(!isNetworkAvailable()){
+                                Toast.makeText(SigninScreen.this, "You are offline. Please check internet connection", Toast.LENGTH_LONG).show();
+                            }
+                            Intent intent = new Intent(SigninScreen.this, TrackerActivity.class);
+                            startActivity(intent);
+                            finish();
+                        }
+                    });
+                    // gotoRegister will now become sign out button
+                    gotoRegister.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            if(!isNetworkAvailable()){
+                                signOutUser();
+                            }else {
+                                Toast.makeText(SigninScreen.this, "You are offline. Please check internet connection.", Toast.LENGTH_LONG).show();
+                            }
+                        }
+                    });
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception exception) {
+                    // Folder not found
+                    // btnSignin will now automatically sign in user
+                    btnSignin.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            if(!isNetworkAvailable()){
+                                Toast.makeText(SigninScreen.this, "You are offline. Please check internet connection.", Toast.LENGTH_LONG).show();
+                                Intent intent = new Intent(SigninScreen.this, TrackerActivity.class);
+                                startActivity(intent);
+                                finish();
+                            }else{
+                                Intent intent = new Intent(SigninScreen.this, SelfieValidation.class);
+                                startActivity(intent);
+                                finish();
+                            }
+                        }
+                    });
+                    if(isNetworkAvailable()){
+                        // gotoRegister will now become sign out button
+                        gotoRegister.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                if(isNetworkAvailable())
+                                    {signOutUser();}
+                                else
+                                {
+                                    Toast.makeText(SigninScreen.this, "You are offline. Check your internet connection", Toast.LENGTH_LONG).show();
+                                }
+                            }
+                        });
                     }
-                });
-                // gotoRegister will now become sign out button
-                gotoRegister.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        signOutUser();
-                    }
-                });
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception exception) {
-                // Folder not found
-                // btnSignin will now automatically sign in user
-                btnSignin.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        Intent intent = new Intent(SigninScreen.this, SelfieValidation.class);
-                        startActivity(intent);
-                        finish();
-                    }
-                });
-                // gotoRegister will now become sign out button
-                gotoRegister.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        signOutUser();
-                    }
-                });
-            }
-        });
+                }
+            });
 
+
+            // gotoRegister will now become sign out button
+            gotoRegister.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    signOutUser();
+                }
+            });
+        }else {
+            // btnSignin will now automatically sign in user
+            btnSignin.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if(!isNetworkAvailable()){
+                        Toast.makeText(SigninScreen.this, "You are offline. Please check internet connection", Toast.LENGTH_LONG).show();
+                    }
+                    Intent intent = new Intent(SigninScreen.this, TrackerActivity.class);
+                    startActivity(intent);
+                    finish();
+                }
+            });
+        }
 
         // gotoRegister will now become sign out button
         gotoRegister.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                signOutUser();
+                if(isNetworkAvailable()){
+                    signOutUser();
+                }else {
+                    Toast.makeText(SigninScreen.this, "You are offline. Please check your internet connection", Toast.LENGTH_SHORT).show();
+                }
+
             }
         });
+
     }
 
 
@@ -260,6 +312,13 @@ public class SigninScreen extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnectedOrConnecting();
     }
 
 

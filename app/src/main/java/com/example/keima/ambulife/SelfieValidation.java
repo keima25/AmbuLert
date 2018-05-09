@@ -83,6 +83,7 @@ public class SelfieValidation extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(SelfieValidation.this, TrackerActivity.class));
+                finish();
             }
         });
 
