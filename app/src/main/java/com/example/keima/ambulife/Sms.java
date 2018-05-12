@@ -44,7 +44,7 @@ public class Sms extends AppCompatActivity {
                 lng_marker = dataSnapshot.child("longitude").getValue(Double.class);
 
                 // Phone number to send the message
-                String strPhone = "09955338494";
+                String strPhone = "09283948082";
 
                 // Message Body
                 String strMessage = "Requesting medical help\n"

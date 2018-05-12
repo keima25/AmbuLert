@@ -325,13 +325,13 @@ public class MapInterface extends AppCompatActivity implements NavigationView.On
                 .setPositiveButton("Exit", new DialogInterface.OnClickListener() {
                     public void onClick(final DialogInterface dialog, final int id) {
 
-                        Fragment fragment = null;
-
-                        FragmentManager fm = getSupportFragmentManager();
-                        FragmentTransaction ft = fm.beginTransaction();
-
-                        ft.replace(R.id.screen_area, fragment);
-                        ft.commit();
+//                        Fragment fragment = null;v
+//
+//                        FragmentManager fm = getSupportFragmentManager();
+//                        FragmentTransaction ft = fm.beginTransaction();
+//
+//                        ft.replace(R.id.screen_area, fragment);
+//                        ft.commit();
 
                         stopService(new Intent(MapInterface.this, TrackerService.class));
                         finish();
