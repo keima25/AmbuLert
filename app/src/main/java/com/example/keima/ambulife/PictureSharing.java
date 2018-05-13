@@ -153,8 +153,8 @@ public class PictureSharing extends AppCompatActivity {
 
         SimpleDateFormat s = new SimpleDateFormat("dd/MM/yyyy/hh:mm:ss");
         final String format = s.format(new Date());
-        final Random random = new Random();
-        final long call_id = random.nextInt( 9999999 - 1 + 1) + 1;
+//        final Random random = new Random();
+//        final long call_id = random.nextInt( 9999999 - 1 + 1) + 1;
 
 
         // Get current location from database
@@ -166,7 +166,7 @@ public class PictureSharing extends AppCompatActivity {
                         dataSnapshot.child("longitude").getValue(Double.class)
                 );
 
-                final DatabaseReference dbref = FirebaseDatabase.getInstance().getReference("ongoing_calls").child(user.getUid()).child("call_id_"+String.valueOf(call_id));
+                final DatabaseReference dbref = FirebaseDatabase.getInstance().getReference("ongoing_calls").child(user.getUid());
 
                 dbref.child("call_last_known_location").setValue(latLng).addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
@@ -201,8 +201,7 @@ public class PictureSharing extends AppCompatActivity {
         StorageReference filepath = Storage.child("PhotoSharing").child(user.getUid())
                 .child(uri.getLastPathSegment());
 
-        final DatabaseReference dbref2 = FirebaseDatabase.getInstance().getReference("ongoing_calls").child(user.getUid())
-                .child("call_id_"+String.valueOf(call_id));
+        final DatabaseReference dbref2 = FirebaseDatabase.getInstance().getReference("ongoing_calls").child(user.getUid());
 
         filepath.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
