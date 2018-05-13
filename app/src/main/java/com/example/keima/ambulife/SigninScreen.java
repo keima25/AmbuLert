@@ -146,9 +146,9 @@ public class SigninScreen extends AppCompatActivity {
                         @Override
                         public void onClick(View view) {
                             if(!isNetworkAvailable()){
-                                signOutUser();
-                            }else {
                                 Toast.makeText(SigninScreen.this, "You are offline. Please check internet connection.", Toast.LENGTH_LONG).show();
+                            }else {
+                                signOutUser();
                             }
                         }
                     });
@@ -346,7 +346,6 @@ public class SigninScreen extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
-        getFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        finish();
     }
 }

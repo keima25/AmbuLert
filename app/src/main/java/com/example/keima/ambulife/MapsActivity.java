@@ -26,6 +26,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.akexorcist.googledirection.constant.Unit;
@@ -83,6 +84,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Google
     private int start = 0;
 
     FloatingActionButton fabMyLocationCamera, fabMyLocationInfo;
+    TextView etaTextView, distanceTextView;
 
     FirebaseUser user;
 
@@ -124,6 +126,8 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Google
         start = 1;
         fabMyLocationCamera = mapInterface.findViewById(R.id.fabMyLocation);
         fabMyLocationInfo = mapInterface.findViewById(R.id.fabLocationInfo);
+        etaTextView = mapInterface.findViewById(R.id.etaTextView);
+        distanceTextView = mapInterface.findViewById(R.id.distanceTextView);
 
         statusCheck();
 
@@ -549,6 +553,9 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Google
 
             Log.d(TAG, "distance: " + distance.toString());
             Log.d(TAG, "duration: " + duration.toString());
+
+            etaTextView.setText("Estimated Travel Time:\n"+duration.toString());
+            distanceTextView.setText("Distance from Responder:"+distance.toString());
 
         } else {
             Toast.makeText(getActivity(), direction.getStatus(), Toast.LENGTH_LONG).show();

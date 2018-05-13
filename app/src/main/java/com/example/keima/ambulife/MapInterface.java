@@ -114,6 +114,7 @@ public class MapInterface extends AppCompatActivity implements NavigationView.On
             public void onClick(View view) {
 //                call(EMERGENCY_NUMBER);
                 startActivity(new Intent(getApplicationContext(), PictureSharing.class));
+                finish();
             }
         });
 
@@ -239,6 +240,7 @@ public class MapInterface extends AppCompatActivity implements NavigationView.On
         if (menuId == R.id.nav_profile) {
             Intent i = new Intent(this, MyProfile.class);
             startActivity(i);
+            finish();
         } else if (menuId == R.id.nav_settings) {
 //            Toast.makeText(this.getApplicationContext(), "You clicked Settings", Toast.LENGTH_SHORT).show();
         } else if (menuId == R.id.nav_logout) {
@@ -280,6 +282,7 @@ public class MapInterface extends AppCompatActivity implements NavigationView.On
                         }
                         // Send message
                         startActivity(new Intent(MapInterface.this, Sms.class));
+
                     }
                 });
 
@@ -309,7 +312,16 @@ public class MapInterface extends AppCompatActivity implements NavigationView.On
         mAuth.signOut();
         // Stop running service
         stopService(new Intent(this, TrackerService.class));
-        getFragmentManager().popBackStack(null, android.app.FragmentManager.POP_BACK_STACK_INCLUSIVE);
+
+        for (Fragment fragment:getSupportFragmentManager().getFragments()) {
+            if (fragment == null) {
+                continue;
+            }
+            else if (fragment!=null) {
+                getSupportFragmentManager().beginTransaction().remove(fragment).commit();
+            }
+        }
+
         final Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             @Override
@@ -321,6 +333,7 @@ public class MapInterface extends AppCompatActivity implements NavigationView.On
 
                 Intent intent = new Intent(MapInterface.this, SigninScreen.class);
                 startActivity(intent);
+                finish();
             }
         }, 5000);
     }
