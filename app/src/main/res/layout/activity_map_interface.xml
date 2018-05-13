@@ -83,6 +83,21 @@
                     app:layout_anchorGravity="bottom|right|end" />
 
                 <android.support.design.widget.FloatingActionButton
+                    android:id="@+id/fabSendSMS"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_gravity="bottom|right"
+                    android:layout_marginBottom="40dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginRight="16dp"
+                    app:backgroundTint="@color/colorButtonMainRed"
+                    android:scaleType="center"
+                    android:src="@drawable/ic_textsms_black_24dp"
+                    android:tint="@color/colorWhite"
+                    app:elevation="4dp"
+                    app:layout_anchorGravity="bottom|right|end" />
+
+                <android.support.design.widget.FloatingActionButton
                     android:id="@+id/fabLocationInfo"
                     android:layout_width="40dp"
                     android:layout_height="40dp"

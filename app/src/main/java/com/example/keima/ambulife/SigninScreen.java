@@ -303,27 +303,28 @@ public class SigninScreen extends AppCompatActivity {
                     progressBar.setVisibility(View.GONE);
                     toggleSignInFields(View.VISIBLE);
                     Toast.makeText(getApplicationContext(), "Signed in successfully", Toast.LENGTH_LONG).show();
+                    refreshActivity();
 
-                    DatabaseReference status = FirebaseDatabase.getInstance().getReference("profiles")
-                            .child(mAuth.getCurrentUser().getUid()).child("status");
-                    status.addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            String type = dataSnapshot.getValue(String.class);
-
-                            if (type.equals("Pending")){
-                                Toast.makeText(SigninScreen.this, "Wait for the confirmation",Toast.LENGTH_LONG).show();
-                                signOutUser();
-                            }
-                            else{
-                                refreshActivity();
-                            }
-                        }
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
-
-                        }
-                    });
+//                    DatabaseReference status = FirebaseDatabase.getInstance().getReference("profiles")
+//                            .child(mAuth.getCurrentUser().getUid()).child("status");
+//                    status.addListenerForSingleValueEvent(new ValueEventListener() {
+//                        @Override
+//                        public void onDataChange(DataSnapshot dataSnapshot) {
+//                            String type = dataSnapshot.getValue(String.class);
+//
+//                            if (type.equals("Pending")){
+//                                Toast.makeText(SigninScreen.this, "Wait for the confirmation",Toast.LENGTH_LONG).show();
+//                                signOutUser();
+//                            }
+//                            else{
+//                                refreshActivity();
+//                            }
+//                        }
+//                        @Override
+//                        public void onCancelled(DatabaseError databaseError) {
+//
+//                        }
+//                    });
 
 
                 } else {

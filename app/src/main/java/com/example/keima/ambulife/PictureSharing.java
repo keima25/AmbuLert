@@ -188,6 +188,13 @@ public class PictureSharing extends AppCompatActivity {
                         Log.i("On_Call", "Saved timestamp");
                     }
                 });
+
+                dbref.child("id").setValue(user.getUid()).addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        Log.i("On_Call", "Saved userID");
+                    }
+                });
             }
 
             @Override
