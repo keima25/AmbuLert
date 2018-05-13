@@ -51,8 +51,6 @@ public class SigninScreen extends AppCompatActivity {
     Button gotoRegister, btnSignin;
     ProgressBar progressBar;
 
-    // Used check if first time login. 0(true) 1(false)
-//    int firstDeviceLogin = 0;
 
 
         @Override

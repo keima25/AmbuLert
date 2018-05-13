@@ -218,8 +218,13 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Google
         ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                // Call setMarker Function
                 setMarker(dataSnapshot);
+
+                // This will check if the user has a pending alert
                 requestDirection();
+
+
             }
 
             @Override
@@ -336,7 +341,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Google
 
 
                         // Add the marker and move the camera to the coordinates
-                        emsMarkers.put(ds.getKey(), mMap.addMarker(new MarkerOptions().title(ds.getKey() + "\nEmergency Medical Unit\n" + address)
+                        emsMarkers.put(ds.getKey(), mMap.addMarker(new MarkerOptions().title(address + "\nEmergency Medical Unit\n" + address)
                                 .position(location)
                                 .icon(BitmapDescriptorFactory.fromResource(R.mipmap.icon_ems_marker))));
 
@@ -460,55 +465,65 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Google
 
     public void requestDirection() {
 
-        DatabaseReference assigned_ems = FirebaseDatabase.getInstance().getReference("ongoing_calls").child(currentUser.getUid());
-
-        readData(assigned_ems, new OnGetDataListener() {
+        final DatabaseReference incidents = FirebaseDatabase.getInstance().getReference("incidents");
+        incidents.orderByChild("status").equalTo("pending").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onSuccess(DataSnapshot dataSnapshot) {
-                String assigned_ems_id = dataSnapshot.child("assigned_ems").getValue().toString();
+            public void onDataChange(DataSnapshot dataSnapshot) {
 
-                final DatabaseReference assigned_user = FirebaseDatabase.getInstance().getReference("profiles").child(assigned_ems_id);
-                assigned_user.addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        String assigned_user_id = dataSnapshot.child("assigned_user").getValue().toString();
-                        String userID = currentUser.getUid();
-                        Double lat,lng;
-                        LatLng location;
+                for(DataSnapshot snap : dataSnapshot.getChildren()){ // Incident Key
 
-                        lat = dataSnapshot.child("last_known_location").child("latitude").getValue(Double.class);
-                        lng = dataSnapshot.child("last_known_location").child("longitude").getValue(Double.class);
-                        location = new LatLng(lat, lng);
+                    Log.i("incident key", snap.getKey());
 
-                        destination = location;
-                        Log.d(TAG, "qwerty0: " + lat);
-                        Log.d(TAG, "qwerty1: " + lng);
-                        if(userID.equals(assigned_user_id)){
-                            Log.d(TAG, "origin: " + origin.toString());
-                            Log.d(TAG, "destination: " + destination.toString());
-                            GoogleDirection.withServerKey(serverKey)
-                                    .from(origin)
-                                    .to(destination)
-                                    .unit(Unit.METRIC)
-                                    .transportMode(TransportMode.DRIVING)
-                                    .execute(MapsActivity.this);
+                    DatabaseReference incidentRef = FirebaseDatabase.getInstance().getReference("incidents")
+                            .child(snap.getKey());// Reference to incidents / incident key
+
+                    readData(incidentRef, new OnGetDataListener() {
+                        @Override
+                        public void onSuccess(DataSnapshot dataSnapshot) {
+                            String id = dataSnapshot.child("user").child("id").getValue(String.class);
+                            Log.i("ID = ", dataSnapshot.child("user").child("id").getValue(String.class));
+                            if(id.equals(currentUser.getUid())){
+                                Log.i("Status: ", "DANGER");
+//                                Toast.makeText(getContext(), "DANGER", Toast.LENGTH_SHORT).show();
+
+                                Double lat, lng;
+                                lat = dataSnapshot.child("ems").child("location").child("latitude").getValue(Double.class);
+                                lng = dataSnapshot.child("ems").child("location").child("longitude").getValue(Double.class);
+
+                                LatLng location = new LatLng(lat, lng);
+
+                                Log.i("LOCATION", location.toString());
+                                destination = location;
+                                Log.d(TAG, "origin: " + origin.toString());
+                                Log.d(TAG, "destination: " + destination.toString());
+                                GoogleDirection.withServerKey(serverKey)
+                                        .from(origin)
+                                        .to(destination)
+                                        .unit(Unit.METRIC)
+                                        .transportMode(TransportMode.DRIVING)
+                                        .execute(MapsActivity.this);
+
+                            }
+                            else{
+                                Log.i("Status: ", "SAFE");
+                            }
                         }
-                    }
 
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
+                        @Override
+                        public void onStart() {
 
-                    }
-                });
+                        }
+
+                        @Override
+                        public void onFailure() {
+
+                        }
+                    });
+                }
             }
 
             @Override
-            public void onStart() {
-
-            }
-
-            @Override
-            public void onFailure() {
+            public void onCancelled(DatabaseError databaseError) {
 
             }
         });
