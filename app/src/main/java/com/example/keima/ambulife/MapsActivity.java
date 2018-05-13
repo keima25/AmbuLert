@@ -310,7 +310,6 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Google
         double lat_marker;
         double lng_marker;
 
-
         final DatabaseReference emsRefLocation = FirebaseDatabase.getInstance().getReference("profiles");
 
         readData(emsRefLocation, new OnGetDataListener() {
