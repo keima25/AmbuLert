@@ -59,7 +59,7 @@ public class MapInterface extends AppCompatActivity implements NavigationView.On
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mToggle;
     private android.support.v7.widget.Toolbar appbar;
-    public static FloatingActionButton fab, fabSendSMS;
+    public static FloatingActionButton fab;
     private final static String EMERGENCY_NUMBER = "1234567890";
     private TextView nav_view_email, nav_view_name;
     ProgressBar progressBar;
@@ -89,7 +89,6 @@ public class MapInterface extends AppCompatActivity implements NavigationView.On
 
         //Floating action button id. This serves as the call button
         fab = (FloatingActionButton) findViewById(R.id.fab);
-        fabSendSMS = (FloatingActionButton) findViewById(R.id.fabSendSMS);
 
         //Get drawerLayout ID
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -117,14 +116,6 @@ public class MapInterface extends AppCompatActivity implements NavigationView.On
             }
         });
 
-        // Floating action button SEND SMS
-        fabSendSMS.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialogSendSms();
-            }
-        });
-
 
         final ProgressDialog pd = new ProgressDialog(this);
         pd.setMessage("Loading");
@@ -146,9 +137,29 @@ public class MapInterface extends AppCompatActivity implements NavigationView.On
                 }
                 else
                 {
-                    getFragmentManager().popBackStack(null, android.app.FragmentManager.POP_BACK_STACK_INCLUSIVE );
-                    fragment = new MapsActivityEMS();
-                    fab.setVisibility(View.GONE);
+                    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                    DatabaseReference ref = FirebaseDatabase.getInstance().getReference("profiles").child(user.getUid()).child("status");
+                    ref.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            if (dataSnapshot.getValue(String.class).equals("Pending")) {
+                               signOutUser();
+                            }
+                            else {
+                                Fragment fragment = null;
+                                getFragmentManager().popBackStack(null, android.app.FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                                fragment = new MapsActivityEMS();
+                                fab.setVisibility(View.GONE);
+                            }
+                        }
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+
+
+
                 }
 
 
@@ -255,37 +266,6 @@ public class MapInterface extends AppCompatActivity implements NavigationView.On
         return false;
     }
 
-
-    private void dialogSendSms(){
-
-        // Initialize dialog
-        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage("Send an emergency sms to nearby EMS? \nNote: The message will contain your current location. Do you want to proceed?")
-                .setCancelable(false)
-                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    public void onClick(final DialogInterface dialog, final int id) {
-                        dialog.dismiss();
-                    }
-                })
-                .setPositiveButton("Request Help!", new DialogInterface.OnClickListener() {
-                    public void onClick(final DialogInterface dialog, final int id) {
-                        // Create a new Intent for the call service
-                        Intent call_intent = new Intent(Intent.ACTION_CALL);
-
-                        if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED) {
-                            Toast.makeText(MapInterface.this, "Send SMS permission is not granted. Please enable it in your settings.", Toast.LENGTH_SHORT).show();
-                            return;
-                        }
-                        // Send message
-                        startActivity(new Intent(MapInterface.this, Sms.class));
-                    }
-                });
-
-        // Show Alert Dialog
-        final AlertDialog callAlertDialog = builder.create();
-        callAlertDialog.show();
-    }
-
     private boolean isMyServiceRunning(Class<?> serviceClass, Context context) {
         ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
         for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
@@ -338,14 +318,6 @@ public class MapInterface extends AppCompatActivity implements NavigationView.On
                 .setPositiveButton("Exit", new DialogInterface.OnClickListener() {
                     public void onClick(final DialogInterface dialog, final int id) {
                         getFragmentManager().popBackStack(null, android.app.FragmentManager.POP_BACK_STACK_INCLUSIVE);
-//                        Fragment fragment = null;v
-//
-//                        FragmentManager fm = getSupportFragmentManager();
-//                        FragmentTransaction ft = fm.beginTransaction();
-//
-//                        ft.replace(R.id.screen_area, fragment);
-//                        ft.commit();
-
                         stopService(new Intent(MapInterface.this, TrackerService.class));
                         finish();
                     }

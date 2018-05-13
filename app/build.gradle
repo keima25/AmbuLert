@@ -51,8 +51,6 @@ dependencies {
     compile 'com.akexorcist:googledirectionlibrary:1.0.4'
 
 
-
-
 }
 
 

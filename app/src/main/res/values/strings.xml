@@ -29,4 +29,5 @@
         \t Take a photo of yourself together with one of your valid ID\'s.
         This is very important for us to confirm your identity.
     </string>
+    <string name="title_activity_incedent_report">IncedentReport</string>
 </resources>

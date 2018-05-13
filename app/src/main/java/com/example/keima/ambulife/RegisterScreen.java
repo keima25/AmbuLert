@@ -6,6 +6,7 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
@@ -190,6 +191,8 @@ public class RegisterScreen extends AppCompatActivity{
 
                     Users users = new Users(id, username, firstname, lastname, phone, type);
 
+                    if (type.equals("USER")){
+
                     databaseRegisterUser.child(id).setValue(users);
 
                     final DatabaseReference dblocationref = FirebaseDatabase.getInstance().getReference("profiles")
@@ -200,6 +203,22 @@ public class RegisterScreen extends AppCompatActivity{
                     dblocationref.setValue(0);
                     dblocationref2.setValue(0);
 
+                    }
+                    else{
+                        databaseRegisterUser.child(id).setValue(users);
+
+                        final DatabaseReference dblocationref = FirebaseDatabase.getInstance().getReference("profiles")
+                                .child(id).child("last_known_location").child("latitude");
+                        final DatabaseReference dblocationref2 = FirebaseDatabase.getInstance().getReference("profiles")
+                                .child(id).child("last_known_location").child("longitude");
+                        final DatabaseReference type = FirebaseDatabase.getInstance().getReference("profiles")
+                                .child(id).child("status");
+                        String pend = "Pending";
+                        dblocationref.setValue(0);
+                        dblocationref2.setValue(0);
+                        type.setValue(pend);
+
+                    }
                     Toast.makeText(getApplicationContext(), "Registration Successful",
                             Toast.LENGTH_SHORT).show();
                     updateDisplayName();
