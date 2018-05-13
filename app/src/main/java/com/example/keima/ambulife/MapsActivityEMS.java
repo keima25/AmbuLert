@@ -14,6 +14,7 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
@@ -49,15 +50,18 @@ import java.util.List;
 
 import static android.content.Context.LOCATION_SERVICE;
 
-public class MapsActivityEMS extends Fragment implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener{
+public class MapsActivityEMS extends Fragment implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
-    public static Activity mapInterface;
     private GoogleMap mMap;
     private LocationManager mLocationManager;
     private PermissionManager permissionManager;
     private Geocoder geocoder;
     private static final String TAG = MapsActivityEMS.class.getSimpleName();
     private HashMap<String, Marker> mMarkers = new HashMap<>();
+    FloatingActionButton fabMyLocationCamera, fabMyLocationInfo;
+
+    public static Activity mapInterface;
+    private int start = 0;
 
     FirebaseUser user;
 
@@ -90,6 +94,11 @@ public class MapsActivityEMS extends Fragment implements OnMapReadyCallback, Goo
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        start = 1;
+        fabMyLocationCamera = mapInterface.findViewById(R.id.fabMyLocation);
+        fabMyLocationInfo = mapInterface.findViewById(R.id.fabLocationInfo);
+
 
         statusCheck();
 
@@ -193,7 +202,8 @@ public class MapsActivityEMS extends Fragment implements OnMapReadyCallback, Goo
         String key;
         double lat;
         double lng;
-        LatLng location;
+        final LatLng location;
+        String address = "";
 
         key = dataSnapshot.getKey();
         lat = dataSnapshot.child("latitude").getValue(Double.class);
@@ -201,38 +211,76 @@ public class MapsActivityEMS extends Fragment implements OnMapReadyCallback, Goo
         location = new LatLng(lat, lng);
 
 
+        if (!mMarkers.containsKey(key)) {
 
-            if (!mMarkers.containsKey(key)) {
-                String address = "";
-                try {
-                    List<Address> addressList = geocoder.getFromLocation(location.latitude, location.longitude, 1);
-                    address = addressList.get(0).getSubLocality() + ", " + addressList.get(0).getLocality() + ",";
-                    address += addressList.get(0).getCountryName();
+            try {
+                List<Address> addressList = geocoder.getFromLocation(location.latitude, location.longitude, 1);
+                address = addressList.get(0).getSubLocality() + ", " + addressList.get(0).getLocality() + ",";
+                address += addressList.get(0).getCountryName();
 
-                    updateLocationOnDatabase(locationReference, location);
-                } catch (IOException e) {
-                    e.printStackTrace();
+                updateLocationOnDatabase(locationReference, location);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            // Add the marker and move the camera to the user coordinates
+            mMarkers.put(key, mMap.addMarker(new MarkerOptions().title(address)
+                    .position(location)
+                    .icon(BitmapDescriptorFactory.fromResource(R.mipmap.icon_ems_marker))));
+
+            final String finalAddress = address;
+            fabMyLocationInfo.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    dialogLocationInfo(finalAddress, location);
                 }
+            });
 
-                // Add the marker and move the camera to the user coordinates
-                mMarkers.put(key, mMap.addMarker(new MarkerOptions().title(address)
-                        .position(location)
-                        .icon(BitmapDescriptorFactory.fromResource(R.mipmap.icon_ems_marker))));
+        } else {
 
-            }
-            else {
+            // Get the marker from mMarkers and move the camera to the user coordinates
+            mMarkers.get(key).setPosition(location);
+        }
 
-                // Get the marker from mMarkers and move the camera to the user coordinates
-                mMarkers.get(key).setPosition(location);
-            }
+        final LatLngBounds.Builder builder = new LatLngBounds.Builder();
+        for (Marker marker : mMarkers.values()) {
+            builder.include(marker.getPosition());
+        }
+//        mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(builder.build(), 300));
 
-            LatLngBounds.Builder builder = new LatLngBounds.Builder();
-            for (Marker marker : mMarkers.values()) {
-                builder.include(marker.getPosition());
-            }
+        if (start == 1) {
             mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(builder.build(), 300));
-            mMap.setOnMarkerClickListener(this);
+            start = 0;
+        }
 
+        fabMyLocationCamera.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(builder.build(), 300));
+            }
+        });
+        mMap.setOnMarkerClickListener(this);
+
+    }
+
+    // Dialog for Location information
+    private void dialogLocationInfo(String address, LatLng location) {
+        Log.i("ADDRESS: ", address);
+
+        // Initialize dialog
+        final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setMessage("My Location Info \n" + address +
+                "\nLatitude, Longitude: \n" + location.toString())
+                .setCancelable(true)
+                .setNegativeButton("Close", new DialogInterface.OnClickListener() {
+                    public void onClick(final DialogInterface dialog, final int id) {
+                        dialog.dismiss();
+                    }
+                });
+
+        // Show Alert Dialog
+        final AlertDialog callAlertDialog = builder.create();
+        callAlertDialog.show();
     }
 
     // This is to check if a Service is running
@@ -251,24 +299,31 @@ public class MapsActivityEMS extends Fragment implements OnMapReadyCallback, Goo
     @Override
     public void onResume() {
         super.onResume();
-
         MapInterface mi = new MapInterface();
-        mi.showCallButton();
 
-        if(!isMyServiceRunning(TrackerService.class, getContext())){
+        mi.hideCallButton();
+
+        if (!isMyServiceRunning(TrackerService.class, getContext())) {
             getContext().startService(new Intent(getContext(), TrackerService.class));
         }
     }
 
+    // This override method is executed once a marker has been clicked
     @Override
     public boolean onMarkerClick(Marker marker) {
+        Log.i("MARKER ID:", marker.getId());
+        Log.i("MARKER TITLE", marker.getTitle());
+
+        String address = marker.getTitle();
+        LatLng position = marker.getPosition();
+
+
         final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        builder.setMessage("Video call with this user?")
+        builder.setMessage("INFO\n" + position + "\n" + address + "\nVideo call with this user?")
                 .setCancelable(true)
                 .setPositiveButton("Continue", new DialogInterface.OnClickListener() {
                     public void onClick(final DialogInterface dialog, final int id) {
                         startActivity(new Intent(getContext(), VideoSharing.class));
-                        getActivity().finish();
                     }
                 });
         final AlertDialog alert = builder.create();

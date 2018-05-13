@@ -1,5 +1,6 @@
 package com.example.keima.ambulife;
 
+import android.app.FragmentManager;
 import android.app.ProgressDialog;
 import android.app.usage.NetworkStats;
 import android.app.usage.NetworkStatsManager;
@@ -233,18 +234,20 @@ public class SigninScreen extends AppCompatActivity {
     // Sign out user
     public void signOutUser(){
 
-        stopService(new Intent(this, TrackerService.class));
-
         // Hide Buttons
         progressBar.setVisibility(View.VISIBLE);
         toggleSignInFields(View.GONE);
         // Sign the user out
         mAuth.signOut();
+
+        stopService(new Intent(this, TrackerService.class));
+        getFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+
         final Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                // Do something after 5s = 5000ms
+                // Do something after 2s = 2000ms
                 refreshActivity();
                 Toast.makeText(getApplicationContext(), "You've signed out",
                         Toast.LENGTH_LONG).show();
@@ -321,6 +324,9 @@ public class SigninScreen extends AppCompatActivity {
         return activeNetworkInfo != null && activeNetworkInfo.isConnectedOrConnecting();
     }
 
-
-
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        getFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+    }
 }

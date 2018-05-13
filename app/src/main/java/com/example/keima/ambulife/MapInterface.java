@@ -139,9 +139,17 @@ public class MapInterface extends AppCompatActivity implements NavigationView.On
                 Fragment fragment = null;
 
                 if(dataSnapshot.getValue(String.class).equals("USER"))
-                { fragment = new MapsActivity();}
+                {
+                    fab.setVisibility(View.VISIBLE);
+                    getFragmentManager().popBackStack(null, android.app.FragmentManager.POP_BACK_STACK_INCLUSIVE );
+                    fragment = new MapsActivity();
+                }
                 else
-                { fragment = new MapsActivityEMS();}
+                {
+                    getFragmentManager().popBackStack(null, android.app.FragmentManager.POP_BACK_STACK_INCLUSIVE );
+                    fragment = new MapsActivityEMS();
+                    fab.setVisibility(View.GONE);
+                }
 
 
                 pd.dismiss();
@@ -295,13 +303,16 @@ public class MapInterface extends AppCompatActivity implements NavigationView.On
         final ProgressDialog pd = new ProgressDialog(this);
         pd.setMessage("Logging out");
         pd.show();
+        // Sign the user out
+        mAuth.signOut();
+        // Stop running service
+        stopService(new Intent(this, TrackerService.class));
+        getFragmentManager().popBackStack(null, android.app.FragmentManager.POP_BACK_STACK_INCLUSIVE);
         final Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 // Do something after 2s = 2000ms
-                // Sign the user out
-                mAuth.signOut();
                 Toast.makeText(getApplicationContext(), "You've signed out",
                         Toast.LENGTH_LONG).show();
                 pd.dismiss();
@@ -316,6 +327,8 @@ public class MapInterface extends AppCompatActivity implements NavigationView.On
         fab.show();
     }
 
+    public void hideCallButton(){ fab.hide();}
+
 
     @Override
     public void onBackPressed() {
@@ -324,7 +337,7 @@ public class MapInterface extends AppCompatActivity implements NavigationView.On
                 .setCancelable(true)
                 .setPositiveButton("Exit", new DialogInterface.OnClickListener() {
                     public void onClick(final DialogInterface dialog, final int id) {
-
+                        getFragmentManager().popBackStack(null, android.app.FragmentManager.POP_BACK_STACK_INCLUSIVE);
 //                        Fragment fragment = null;v
 //
 //                        FragmentManager fm = getSupportFragmentManager();
