@@ -87,8 +87,6 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Google
     FirebaseUser user;
 
     private String serverKey = "AIzaSyBhgkubhJQ5f72-QBgCo_-gEYyTKJlXLrw";
-    //private LatLng origin = new LatLng(7.0530255, 125.5413125);
-    //private LatLng destination = new LatLng(7.0717169, 125.5981622);
     private LatLng origin = new LatLng(0.0, 0.0);
     private LatLng destination = new LatLng(0.0, 0.0);
 
@@ -342,7 +340,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Google
                                 .position(location)
                                 .icon(BitmapDescriptorFactory.fromResource(R.mipmap.icon_ems_marker))));
 
-                        destination = location;
+                        //destination = location;
                     }
                 }
                 Toast.makeText(getContext(), "" + count, Toast.LENGTH_LONG).show();
@@ -461,19 +459,65 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Google
 
 
     public void requestDirection() {
-        Log.d(TAG, "origin: " + origin.toString());
-        Log.d(TAG, "destination: " + destination.toString());
-        GoogleDirection.withServerKey(serverKey)
-                .from(origin)
-                .to(destination)
-                .unit(Unit.METRIC)
-                .transportMode(TransportMode.DRIVING)
-                .execute(this);
+
+        DatabaseReference assigned_ems = FirebaseDatabase.getInstance().getReference("ongoing_calls").child(currentUser.getUid());
+
+        readData(assigned_ems, new OnGetDataListener() {
+            @Override
+            public void onSuccess(DataSnapshot dataSnapshot) {
+                String assigned_ems_id = dataSnapshot.child("assigned_ems").getValue().toString();
+
+                final DatabaseReference assigned_user = FirebaseDatabase.getInstance().getReference("profiles").child(assigned_ems_id);
+                assigned_user.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        String assigned_user_id = dataSnapshot.child("assigned_user").getValue().toString();
+                        String userID = currentUser.getUid();
+                        Double lat,lng;
+                        LatLng location;
+
+                        lat = dataSnapshot.child("last_known_location").child("latitude").getValue(Double.class);
+                        lng = dataSnapshot.child("last_known_location").child("longitude").getValue(Double.class);
+                        location = new LatLng(lat, lng);
+
+                        destination = location;
+                        Log.d(TAG, "qwerty0: " + lat);
+                        Log.d(TAG, "qwerty1: " + lng);
+                        if(userID.equals(assigned_user_id)){
+                            Log.d(TAG, "origin: " + origin.toString());
+                            Log.d(TAG, "destination: " + destination.toString());
+                            GoogleDirection.withServerKey(serverKey)
+                                    .from(origin)
+                                    .to(destination)
+                                    .unit(Unit.METRIC)
+                                    .transportMode(TransportMode.DRIVING)
+                                    .execute(MapsActivity.this);
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+            }
+
+            @Override
+            public void onStart() {
+
+            }
+
+            @Override
+            public void onFailure() {
+
+            }
+        });
 
     }
 
     @Override
     public void onDirectionSuccess(Direction direction, String rawBody) {
+
         Log.d(TAG, "origin: " + origin.toString());
         Log.d(TAG, "destination: " + destination.toString());
         Toast.makeText(getActivity(), direction.getStatus(), Toast.LENGTH_LONG).show();
