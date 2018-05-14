@@ -83,6 +83,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Google
     private HashMap<String, Marker> emsMarkers = new HashMap<>();
     private int start = 0;
 
+    String EMS_ID = "";
     FloatingActionButton fabMyLocationCamera, fabMyLocationInfo;
     TextView etaTextView, distanceTextView;
 
@@ -206,7 +207,6 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Google
         mMap = googleMap;
         mMap.getUiSettings().setMapToolbarEnabled(false);
         mMap.setMaxZoomPreference(20);
-        setMarkerEms();
         subscribeToUpdates();
 
     }
@@ -224,9 +224,17 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Google
             public void onDataChange(DataSnapshot dataSnapshot) {
                 // Call setMarker Function
                 setMarker(dataSnapshot);
-
-                // This will check if the user has a pending alert
+                setMarkerEms();
                 requestDirection();
+
+                //Toast.makeText(mapInterface, EMS_ID, Toast.LENGTH_SHORT).show();
+                Log.i("EMSID = ", EMS_ID);
+
+//                if(!EMS_ID.equals("")){
+//
+//                    requestDirection(EMS_ID);
+//
+//                }
 
 
             }
@@ -236,6 +244,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Google
 
             }
         });
+
     }
 
 
@@ -487,6 +496,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Google
                             Log.i("ID = ", dataSnapshot.child("user").child("id").getValue(String.class));
                             if(id.equals(currentUser.getUid())){
                                 Log.i("Status: ", "DANGER");
+                                EMS_ID = dataSnapshot.child("ems").child("id").getValue(String.class);
 //                                Toast.makeText(getContext(), "DANGER", Toast.LENGTH_SHORT).show();
 
                                 Double lat, lng;
