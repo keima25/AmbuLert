@@ -100,9 +100,6 @@ public class PictureSharing extends AppCompatActivity {
 
                     call(EMERGENCY_NUMBER);
 
-//                    progress.setMessage("Uploading");
-//                    progress.show();
-
                 }
             });
         }
@@ -278,4 +275,8 @@ public class PictureSharing extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+    }
 }

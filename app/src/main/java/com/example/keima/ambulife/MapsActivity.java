@@ -81,6 +81,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Google
     private static final String TAG = MapsActivity.class.getSimpleName();
     private HashMap<String, Marker> mMarkers = new HashMap<>();
     private HashMap<String, Marker> emsMarkers = new HashMap<>();
+    private HashMap<String, Marker> assignEmsMarkers = new HashMap<>();
     private int start = 0;
 
     String EMS_ID = "";
@@ -222,19 +223,21 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Google
         ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                emsMarkers.clear();
+
                 // Call setMarker Function
                 setMarker(dataSnapshot);
-                setMarkerEms();
-                requestDirection();
+                checkAssignedEms(); // Check if there is assigned EMS and assign to EMS_ID
 
                 //Toast.makeText(mapInterface, EMS_ID, Toast.LENGTH_SHORT).show();
                 Log.i("EMSID = ", EMS_ID);
 
-//                if(!EMS_ID.equals("")){
-//
-//                    requestDirection(EMS_ID);
-//
-//                }
+                if(EMS_ID != ""){
+                    requestDirection(EMS_ID);
+                    setMarkerAssignEms(EMS_ID);
+                }else{
+                    setMarkerEms();
+                }
 
 
             }
@@ -244,6 +247,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Google
 
             }
         });
+
 
     }
 
@@ -311,7 +315,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Google
         });
         mMap.setOnMarkerClickListener(this);
 
-        origin = location;
+        destination = location;
     }
 
     private void setMarkerEms() {
@@ -360,7 +364,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Google
                         //destination = location;
                     }
                 }
-                Toast.makeText(getContext(), "" + count, Toast.LENGTH_LONG).show();
+//                Toast.makeText(getContext(), "" + count, Toast.LENGTH_LONG).show();
 
             }
 
@@ -375,6 +379,59 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Google
             }
         });
 
+    }
+
+
+    private void setMarkerAssignEms(String emsID) {
+        emsMarkers.clear();
+
+        DatabaseReference emsprofile = FirebaseDatabase.getInstance().getReference("profiles").child(emsID)
+                .child("last_known_location");
+
+        emsprofile.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                String key;
+                double lat_marker;
+                double lng_marker;
+                final LatLng location;
+                String address = "";
+
+                key = dataSnapshot.getKey();
+                lat_marker = dataSnapshot.child("latitude").getValue(Double.class);
+                lng_marker = dataSnapshot.child("longitude").getValue(Double.class);
+                location = new LatLng(lat_marker, lng_marker);
+
+                if (!assignEmsMarkers.containsKey(key)) { // If location is not saved yet. Get location update and set marker
+                    try {
+                        List<Address> addressList = geocoder.getFromLocation(location.latitude, location.longitude, 1);
+                        address = addressList.get(0).getSubLocality() + ", " + addressList.get(0).getLocality() + ",";
+                        address += addressList.get(0).getCountryName();
+
+                        updateLocationOnDatabase(locationReference, location);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+                    // Add the marker and move the camera to the user coordinates
+                    assignEmsMarkers.put(key, mMap.addMarker(new MarkerOptions().title(address).position(location)
+                            .icon(BitmapDescriptorFactory.fromResource(R.mipmap.icon_ems_marker))));
+
+
+                } else { // If location is already saved. Set marker
+
+                    // Get the marker from mMarkers and move the camera to the user coordinates
+                    assignEmsMarkers.get(key).setPosition(location);
+                }
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
 
@@ -475,7 +532,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Google
     }
 
 
-    public void requestDirection() {
+    public void checkAssignedEms() {
 
         final DatabaseReference incidents = FirebaseDatabase.getInstance().getReference("incidents");
         incidents.orderByChild("status").equalTo("pending").addListenerForSingleValueEvent(new ValueEventListener() {
@@ -506,15 +563,9 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Google
                                 LatLng location = new LatLng(lat, lng);
 
                                 Log.i("LOCATION", location.toString());
-                                destination = location;
+//                                destination = location;
                                 Log.d(TAG, "origin: " + origin.toString());
                                 Log.d(TAG, "destination: " + destination.toString());
-                                GoogleDirection.withServerKey(serverKey)
-                                        .from(origin)
-                                        .to(destination)
-                                        .unit(Unit.METRIC)
-                                        .transportMode(TransportMode.DRIVING)
-                                        .execute(MapsActivity.this);
 
                             }
                             else{
@@ -543,18 +594,52 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Google
 
     }
 
+    private void requestDirection(String ems_id) {
+
+        DatabaseReference emsloc = FirebaseDatabase.getInstance().getReference("profiles")
+                .child(ems_id).child("last_known_location");
+
+        emsloc.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Double lat = dataSnapshot.child("latitude").getValue(Double.class);
+                Double lng = dataSnapshot.child("longitude").getValue(Double.class);
+
+                LatLng location = new LatLng(lat, lng);
+                origin = location;
+
+                GoogleDirection.withServerKey(serverKey)
+                        .from(origin)
+                        .to(destination)
+                        .unit(Unit.METRIC)
+                        .transportMode(TransportMode.DRIVING)
+                        .execute(MapsActivity.this);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+
+
     @Override
     public void onDirectionSuccess(Direction direction, String rawBody) {
 
+
         Log.d(TAG, "origin: " + origin.toString());
         Log.d(TAG, "destination: " + destination.toString());
-        Toast.makeText(getActivity(), direction.getStatus(), Toast.LENGTH_LONG).show();
+//        Toast.makeText(getActivity(), direction.getStatus(), Toast.LENGTH_LONG).show();
         if (direction.isOK()) {
             Route route = direction.getRouteList().get(0);
             Leg leg = route.getLegList().get(0);
 
+
             ArrayList<LatLng> directionPositionList = route.getLegList().get(0).getDirectionPoint();
-            mMap.addPolyline(DirectionConverter.createPolyline(getActivity(), directionPositionList, 5, Color.RED));
+
+            mMap.addPolyline(DirectionConverter.createPolyline(getContext(), directionPositionList, 5, Color.RED));
 
             Info distanceInfo = leg.getDistance();
             Info durationInfo = leg.getDuration();
@@ -565,10 +650,10 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Google
             Log.d(TAG, "duration: " + duration.toString());
 
             etaTextView.setText("Estimated Travel Time:\n"+duration.toString());
-            distanceTextView.setText("Distance from Responder:"+distance.toString());
+            distanceTextView.setText("Distance from Responder:\n"+distance.toString());
 
         } else {
-            Toast.makeText(getActivity(), direction.getStatus(), Toast.LENGTH_LONG).show();
+//            Toast.makeText(getActivity(), direction.getStatus(), Toast.LENGTH_LONG).show();
 
         }
     }

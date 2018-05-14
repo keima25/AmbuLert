@@ -1,11 +1,13 @@
 package com.example.keima.ambulife;
 
 import android.animation.LayoutTransition;
+import android.app.FragmentManager;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Environment;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.transition.Fade;
@@ -15,7 +17,9 @@ import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Layout;
+import android.text.LoginFilter;
 import android.transition.ChangeBounds;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,11 +29,17 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -112,6 +122,7 @@ public class SelfieValidation extends AppCompatActivity {
             public void onClick(View v) {
                 final Uri uri = PicUri;
                 final FirebaseUser current_user = FirebaseAuth.getInstance().getCurrentUser();
+                final DatabaseReference profileRef = FirebaseDatabase.getInstance().getReference("profiles");
                 final StorageReference file_storage = FirebaseStorage.getInstance().getReference("SelfiesWithValidID");
                 final String storage_file_name = "Selfie_Validation_"+current_user.getUid();
 
@@ -131,6 +142,8 @@ public class SelfieValidation extends AppCompatActivity {
                     @Override
                     public void onFailure(@NonNull Exception exception) {
                         // Folder not found
+                        // Save imageUrl to user profile
+
                         //Create new folder > new image file
                         StorageReference newFolderReference = FirebaseStorage.getInstance().getReference("SelfiesWithValidID")
                                 .child(current_user.getUid())
@@ -139,13 +152,46 @@ public class SelfieValidation extends AppCompatActivity {
                         newFolderReference.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                             @Override
                             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                                progressDialog.dismiss();
+                                Uri downloadUri = taskSnapshot.getDownloadUrl();
+
+                                DatabaseReference profile = FirebaseDatabase.getInstance().getReference("profiles")
+                                        .child(current_user.getUid());
+
+                                profile.child("validation_image").setValue(String.valueOf(downloadUri)).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        Log.i("UPLOAD: ", PicUri.toString());
+                                    }
+                                });
+
 
                                 Toast.makeText(SelfieValidation.this, "Photo successfully uploaded. Thank you for validating your account."
                                         ,Toast.LENGTH_LONG).show();
 
-                                startActivity(new Intent(SelfieValidation.this, TrackerActivity.class));
-                                finish();
+                                profile.child("status").addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(DataSnapshot dataSnapshot) {
+                                        if(dataSnapshot.child("status").getValue(String.class).equals("Pending")){
+                                            progressDialog.dismiss();
+                                            Toast.makeText(SelfieValidation.this, "Thank you. Please wait for 5 minutes for us to validate your account.", Toast.LENGTH_SHORT).show();
+                                            Log.i("Status: ", "Pending");
+
+                                            startActivity(new Intent(SelfieValidation.this, SigninScreen.class));
+                                            finish();
+                                        }else{
+                                            Log.i("Status: ", "Verified");
+                                            progressDialog.dismiss();
+                                            startActivity(new Intent(SelfieValidation.this, TrackerActivity.class));
+                                            finish();
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onCancelled(DatabaseError databaseError) {
+
+                                    }
+                                });
+
                             }
                         });
 
@@ -166,6 +212,7 @@ public class SelfieValidation extends AppCompatActivity {
             }
         });
     }
+
 
     private void transitionScreen() {
         TransitionManager.beginDelayedTransition(nextStepScreen);

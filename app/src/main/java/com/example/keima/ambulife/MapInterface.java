@@ -114,7 +114,7 @@ public class MapInterface extends AppCompatActivity implements NavigationView.On
             public void onClick(View view) {
 //                call(EMERGENCY_NUMBER);
                 startActivity(new Intent(getApplicationContext(), PictureSharing.class));
-                finish();
+//                finish();
             }
         });
 
@@ -353,7 +353,7 @@ public class MapInterface extends AppCompatActivity implements NavigationView.On
                 .setPositiveButton("Exit", new DialogInterface.OnClickListener() {
                     public void onClick(final DialogInterface dialog, final int id) {
                         getFragmentManager().popBackStack(null, android.app.FragmentManager.POP_BACK_STACK_INCLUSIVE);
-//                        Fragment fragment = null;v
+//                        Fragment fragment = null;
 //
 //                        FragmentManager fm = getSupportFragmentManager();
 //                        FragmentTransaction ft = fm.beginTransaction();
