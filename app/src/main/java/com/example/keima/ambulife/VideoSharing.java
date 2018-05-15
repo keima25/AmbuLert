@@ -17,7 +17,7 @@ public class VideoSharing extends AppCompatActivity implements Connector.IConnec
     private boolean mVidyoClientInitialized = false;
     private Connector mVidyoConnector = null;
     private FrameLayout vidFrame;
-    private String token = "cHJvdmlzaW9uAHVzZXIxQDMyMGVkMy52aWR5by5pbwA2MzY5MzE4NjYxMwAAYzg4MDE1NzgzZTkxYWY3MjBkYzY1MmU3YWM5M2M4NWEzNDIwYTFlZjEwNWY5MGI2NjY4NDg2YjQ5ZmM4MzBlODg2YTVlMTI0ZDlmMTZlODViNDAxNzE4NzMzNzY5NmU5";
+    private String token = "cHJvdmlzaW9uAHVzZXIxQDMyMGVkMy52aWR5by5pbwA2MzY5MzY5NjQxMgAAZjIyYWNmNmQwMDE2MDQ0MjIwZmU3YjcwNDdiZTZjYThhYjM1ZDcxMGYxNzM0MDQyMDYxZDViZDVlY2M3NDIxOTQ5ODk1MzI4ZGI0YjMwMzAyMzM2M2VkM2E1NTNmNGU3";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

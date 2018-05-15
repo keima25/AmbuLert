@@ -50,11 +50,10 @@
             android:layout_marginLeft="50dp"
             android:layout_marginRight="50dp"
             android:layout_marginStart="50dp"
+            android:textColorHint="#ffffff"
             android:hint="First name"
             android:inputType="textCapWords"
-
             android:textColor="@color/colorWhite"
-            android:textColorHint="@color/colorHint"
             android:textSize="15sp" />
 
         <EditText
@@ -66,10 +65,10 @@
             android:layout_marginLeft="50dp"
             android:layout_marginRight="50dp"
             android:layout_marginStart="50dp"
+            android:textColorHint="#ffffff"
             android:hint="Last name"
             android:inputType="textCapWords"
             android:textColor="@color/colorWhite"
-            android:textColorHint="@color/colorHint"
             android:textSize="15sp" />
 
         <EditText
@@ -82,9 +81,9 @@
             android:layout_marginRight="50dp"
             android:layout_marginStart="50dp"
             android:hint="Email(Username)"
+            android:textColorHint="#ffffff"
             android:inputType="textEmailAddress"
             android:textColor="@color/colorWhite"
-            android:textColorHint="@color/colorHint"
             android:textSize="15sp" />
 
         <EditText
@@ -97,9 +96,9 @@
             android:layout_marginRight="50dp"
             android:layout_marginStart="50dp"
             android:hint="Password"
+            android:textColorHint="#ffffff"
             android:inputType="textPassword"
             android:textColor="@color/colorWhite"
-            android:textColorHint="@color/colorHint"
             android:textSize="15sp" />
 
         <EditText
@@ -112,9 +111,9 @@
             android:layout_marginRight="50dp"
             android:layout_marginStart="50dp"
             android:hint="Confirm Password"
+            android:textColorHint="#ffffff"
             android:inputType="textPassword"
             android:textColor="@color/colorWhite"
-            android:textColorHint="@color/colorHint"
             android:textSize="15sp" />
 
         <EditText
@@ -127,10 +126,10 @@
             android:layout_marginRight="50dp"
             android:layout_marginStart="50dp"
             android:hint="Mobile Number e.g 09123456789"
+            android:textColorHint="#ffffff"
             android:inputType="number"
             android:maxLength="11"
             android:textColor="@color/colorWhite"
-            android:textColorHint="@color/colorHint"
             android:textSize="15sp" />
 
         <RadioButton

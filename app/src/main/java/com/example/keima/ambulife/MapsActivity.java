@@ -223,8 +223,6 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Google
         ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                emsMarkers.clear();
-
                 // Call setMarker Function
                 setMarker(dataSnapshot);
                 checkAssignedEms(); // Check if there is assigned EMS and assign to EMS_ID
@@ -232,12 +230,17 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Google
                 //Toast.makeText(mapInterface, EMS_ID, Toast.LENGTH_SHORT).show();
                 Log.i("EMSID = ", EMS_ID);
 
-                if(EMS_ID != ""){
-                    requestDirection(EMS_ID);
-                    setMarkerAssignEms(EMS_ID);
-                }else{
-                    setMarkerEms();
-                }
+                Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run(){
+                        // wait for 5 seconds
+                        if(EMS_ID !="") {
+                            requestDirection(EMS_ID);
+                            setMarkerAssignEms(EMS_ID);
+                        }
+                    }
+                }, 2000);
 
 
             }
@@ -297,6 +300,8 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Google
             mMarkers.get(key).setPosition(location);
         }
 
+        origin = location;
+
         final LatLngBounds.Builder builder = new LatLngBounds.Builder();
         for (Marker marker : mMarkers.values()) {
             builder.include(marker.getPosition());
@@ -315,7 +320,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Google
         });
         mMap.setOnMarkerClickListener(this);
 
-        destination = location;
+
     }
 
     private void setMarkerEms() {
@@ -357,7 +362,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Google
 
 
                         // Add the marker and move the camera to the coordinates
-                        emsMarkers.put(ds.getKey(), mMap.addMarker(new MarkerOptions().title(address + "\nEmergency Medical Unit\n" + address)
+                        emsMarkers.put(ds.getKey(), mMap.addMarker(new MarkerOptions().title("Emergency Medical Unit\n" + address)
                                 .position(location)
                                 .icon(BitmapDescriptorFactory.fromResource(R.mipmap.icon_ems_marker))));
 
@@ -383,7 +388,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Google
 
 
     private void setMarkerAssignEms(String emsID) {
-        emsMarkers.clear();
+//        emsMarkers.clear();
 
         DatabaseReference emsprofile = FirebaseDatabase.getInstance().getReference("profiles").child(emsID)
                 .child("last_known_location");
@@ -409,7 +414,6 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Google
                         address = addressList.get(0).getSubLocality() + ", " + addressList.get(0).getLocality() + ",";
                         address += addressList.get(0).getCountryName();
 
-                        updateLocationOnDatabase(locationReference, location);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -596,8 +600,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Google
 
     private void requestDirection(String ems_id) {
 
-        DatabaseReference emsloc = FirebaseDatabase.getInstance().getReference("profiles")
-                .child(ems_id).child("last_known_location");
+        DatabaseReference emsloc = FirebaseDatabase.getInstance().getReference("profiles").child(ems_id).child("last_known_location");
 
         emsloc.addValueEventListener(new ValueEventListener() {
             @Override
@@ -606,7 +609,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Google
                 Double lng = dataSnapshot.child("longitude").getValue(Double.class);
 
                 LatLng location = new LatLng(lat, lng);
-                origin = location;
+                destination = location;
 
                 GoogleDirection.withServerKey(serverKey)
                         .from(origin)
@@ -646,15 +649,20 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Google
             String distance = distanceInfo.getText();
             String duration = durationInfo.getText();
 
-            Log.d(TAG, "distance: " + distance.toString());
-            Log.d(TAG, "duration: " + duration.toString());
+            Log.d(TAG, "distance: " + distance);
+            Log.d(TAG, "duration: " + duration);
 
             etaTextView.setText("Estimated Travel Time:\n"+duration.toString());
             distanceTextView.setText("Distance from Responder:\n"+distance.toString());
 
-        } else {
-//            Toast.makeText(getActivity(), direction.getStatus(), Toast.LENGTH_LONG).show();
 
+        } else if(direction.getStatus().equals("OVER_QUERY_LIMIT")){
+
+                Log.i("DIRECTION STATUS = ", "OVER_QUERY_LIMIT");
+                Toast.makeText(getContext(), direction.getStatus(), Toast.LENGTH_LONG).show();
+        }
+        else{
+            Toast.makeText(getContext(), direction.getStatus(), Toast.LENGTH_LONG).show();
         }
     }
 

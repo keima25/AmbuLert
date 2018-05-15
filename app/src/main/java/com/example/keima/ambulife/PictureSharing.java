@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Picture;
+import android.hardware.Camera;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -52,6 +53,7 @@ public class PictureSharing extends AppCompatActivity {
     ProgressDialog progress;
     private static final int CAMERA_REQUEST_CODE = 1;
     private static final String EMERGENCY_NUMBER = "09283948082";
+    private static final String EMERGENCY_NUMBER2 = "09269384310";
     private StorageReference Storage;
     Uri PicUri;
     FirebaseUser user;
@@ -98,7 +100,7 @@ public class PictureSharing extends AppCompatActivity {
                 @Override
                 public void onClick(View view) {
 
-                    call(EMERGENCY_NUMBER);
+                    call(EMERGENCY_NUMBER2);
 
                 }
             });
@@ -278,5 +280,11 @@ public class PictureSharing extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+        Camera camera = Camera.open();
+        if (camera!= null) {
+            camera.stopPreview();
+            camera.release();
+            camera = null;
+        }
     }
 }

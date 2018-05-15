@@ -52,6 +52,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Objects;
 
 public class SelfieValidation extends AppCompatActivity {
 
@@ -77,6 +78,26 @@ public class SelfieValidation extends AppCompatActivity {
         verificationScreen = (LinearLayout) findViewById(R.id.verificationScreen);
 
         progressDialog = new ProgressDialog(this);
+
+        FirebaseUser current_user = FirebaseAuth.getInstance().getCurrentUser();
+
+        final DatabaseReference status = FirebaseDatabase.getInstance().getReference("profiles").child(current_user.getUid());
+
+        status.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(dataSnapshot.child("status").exists()){
+                    if(dataSnapshot.child("status").getValue(String.class).equals("Pending")){
+                        skip.setVisibility(View.GONE);
+                }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
 
 
         // Set onClickListener for the first screen: nextStepScreen
@@ -176,7 +197,11 @@ public class SelfieValidation extends AppCompatActivity {
                                             Toast.makeText(SelfieValidation.this, "Thank you. Please wait for 5 minutes for us to validate your account.", Toast.LENGTH_SHORT).show();
                                             Log.i("Status: ", "Pending");
 
-                                            startActivity(new Intent(SelfieValidation.this, SigninScreen.class));
+                                            FirebaseAuth mAuth = FirebaseAuth.getInstance();
+
+                                            mAuth.signOut();
+
+                                            startActivity(new Intent(SelfieValidation.this, RegisterScreen.class));
                                             finish();
                                         }else{
                                             Log.i("Status: ", "Verified");
@@ -210,6 +235,32 @@ public class SelfieValidation extends AppCompatActivity {
                 cameraBtn.setImageResource(R.drawable.ic_menu_camera);
                 buttonViews.setVisibility(View.GONE);
             }
+        });
+    }
+
+    // Create Interface for Callbacks
+    public interface OnGetDataListener {
+        //this is for callbacks
+        void onSuccess(DataSnapshot dataSnapshot);
+
+        void onStart();
+
+        void onFailure();
+    }
+
+    public void readData(DatabaseReference ref, final MapsActivity.OnGetDataListener listener) {
+        listener.onStart();
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                listener.onSuccess(dataSnapshot);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                listener.onFailure();
+            }
+
         });
     }
 

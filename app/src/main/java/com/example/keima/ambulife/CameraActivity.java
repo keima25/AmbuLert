@@ -148,7 +148,6 @@ public class CameraActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View view) {
 
-
                     Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                     File file = getOutputMediaFile(1);
                     PicUri = FileProvider.getUriForFile(CameraActivity.this,

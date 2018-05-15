@@ -240,7 +240,7 @@ public class MapInterface extends AppCompatActivity implements NavigationView.On
         if (menuId == R.id.nav_profile) {
             Intent i = new Intent(this, MyProfile.class);
             startActivity(i);
-            finish();
+//            finish();
         } else if (menuId == R.id.nav_settings) {
 //            Toast.makeText(this.getApplicationContext(), "You clicked Settings", Toast.LENGTH_SHORT).show();
         } else if (menuId == R.id.nav_logout) {

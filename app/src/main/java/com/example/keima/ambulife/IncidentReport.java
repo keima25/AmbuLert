@@ -1,7 +1,9 @@
 package com.example.keima.ambulife;
 
+import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
+import android.os.Handler;
 import android.provider.ContactsContract;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -12,6 +14,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -39,6 +42,7 @@ public class IncidentReport extends AppCompatActivity {
         setContentView(R.layout.activity_incident_report);
         geocoder = new Geocoder(this);
 
+        user = FirebaseAuth.getInstance().getCurrentUser();
         firstname_ems = (TextView) findViewById(R.id.firstname_ems);
         ems_id = (TextView) findViewById(R.id.ems_id);
         user_ID = (TextView) findViewById(R.id.user_id);
@@ -137,6 +141,14 @@ public class IncidentReport extends AppCompatActivity {
                                                         pend.child("status").setValue("completed");
                                                         dispatch.child("dispatching").setValue("false");
                                                         toDB.child("image").setValue(url);
+
+                                                        Handler handler = new Handler();
+                                                        handler.postDelayed(new Runnable() {
+                                                            @Override
+                                                            public void run() {
+                                                                startActivity(new Intent(IncidentReport.this, MapsActivityEMS.class));
+                                                            }
+                                                        }, 3000);
 
                                                     }
                                                 });
