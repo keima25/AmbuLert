@@ -94,7 +94,7 @@
         <activity
             android:name=".Sms"
             android:exported="true" />
-        <activity android:name=".AcidentReport"></activity>
+        <activity android:name=".IncidentReport" android:exported="true"></activity>
     </application>
 
 </manifest>
