@@ -89,8 +89,8 @@ public class IncidentReport extends AppCompatActivity {
                                 lng.setText(nm_lng.format(lng_user));
                                 date.setText(currentDateTimeString);
 
-                                DatabaseReference ref = FirebaseDatabase.getInstance().getReference("profiles").child(user_id);
-                                ref.addListenerForSingleValueEvent(new ValueEventListener() {
+                                final DatabaseReference userID = FirebaseDatabase.getInstance().getReference("profiles").child(user_id);
+                                userID.addListenerForSingleValueEvent(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(DataSnapshot dataSnapshot) {
 
@@ -140,8 +140,9 @@ public class IncidentReport extends AppCompatActivity {
                                                         pend.child("status").setValue("completed");
                                                         dispatch.child("dispatching").setValue(false);
                                                         toDB.child("image").setValue(url);
-                                                        toDB.child("user").child("dispatching").setValue(false);
-                                                        toDB.child("user").child("responder").setValue(false);
+                                                        userID.child("dispatching").setValue(false);
+                                                        userID.child("responder").setValue(false);
+                                                        dispatch.child("patient").setValue(false);
 
                                                         Handler handler = new Handler();
                                                         handler.postDelayed(new Runnable() {
