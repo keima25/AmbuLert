@@ -117,6 +117,7 @@ public class IncidentReport extends AppCompatActivity {
                                                         DatabaseReference toDB = FirebaseDatabase.getInstance().getReference("reports").push();
                                                         String text = editText.getText().toString().trim();
                                                         String address ="";
+                                                        Boolean bol = false;
 
                                                         try {
                                                             List<Address> addressList;
@@ -139,7 +140,7 @@ public class IncidentReport extends AppCompatActivity {
                                                         toDB.child("remarks").setValue(text);
                                                         Log.d("ASDASD", "Hello1: "+url);
                                                         pend.child("status").setValue("completed");
-                                                        dispatch.child("dispatching").setValue("false");
+                                                        dispatch.child("dispatching").setValue(bol);
                                                         toDB.child("image").setValue(url);
 
                                                         Handler handler = new Handler();
