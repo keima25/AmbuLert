@@ -86,7 +86,7 @@ public class TrackerService extends Service {
     private void requestLocationUpdates() {
         LocationRequest request = new LocationRequest();
         request.setInterval(4000);
-        request.setFastestInterval(1500);
+        request.setFastestInterval(2000);
         request.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         FusedLocationProviderClient client = LocationServices.getFusedLocationProviderClient(this);
 
@@ -108,7 +108,7 @@ public class TrackerService extends Service {
                                     .child(user.getUid()).child("last_known_location");
 
                             Location location = locationResult.getLastLocation();
-                            if (location != null) {
+                            if (location != null ) {
                                 Log.d(TAG, "location update " + location);
                                 locationRef.setValue(location);
 //                        Toast.makeText(getApplicationContext(), "Location Updated", Toast.LENGTH_SHORT).show();

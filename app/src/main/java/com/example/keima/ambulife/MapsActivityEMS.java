@@ -54,6 +54,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.karan.churi.PermissionManager.PermissionManager;
+import com.vidyo.VidyoClient.Endpoint.User;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -77,13 +78,14 @@ public class MapsActivityEMS extends Fragment implements OnMapReadyCallback, Goo
     private int queryCount = 0;
 
     boolean dispatch = false;
+    boolean respond = false;
     String USER_ID = "";
     FloatingActionButton fabMyLocationCamera, fabMyLocationInfo, fabReport;
     TextView etaTextView, distanceTextView;
 
     FirebaseUser user;
 
-    private String serverKey = "AIzaSyBhgkubhJQ5f72-QBgCo_-gEYyTKJlXLrw";
+    private String serverKey = "AIzaSyBFOWoDbj5nMYzO1VUmPwVQZCeRgB5m4Ik";
     private LatLng origin = new LatLng(0.0, 0.0);
     private LatLng destination = new LatLng(0.0, 0.0);
     private LatLng origin2 = new LatLng(0.0, 0.0);
@@ -127,6 +129,19 @@ public class MapsActivityEMS extends Fragment implements OnMapReadyCallback, Goo
 
 
         statusCheck();
+
+//        LatLng origin1, destination1;
+//
+//        origin1 = new LatLng();
+//        destination1 = new LatLng();
+//
+//
+//        GoogleDirection.withServerKey(serverKey)
+//                .from(origin1)
+//                .to(destination1)
+//                .unit(Unit.METRIC)
+//                .transportMode(TransportMode.DRIVING)
+//                .execute(MapsActivityEMS.this);
 
 //        Toast.makeText(getContext(), "EMS MAP", Toast.LENGTH_SHORT).show();
 
@@ -215,18 +230,11 @@ public class MapsActivityEMS extends Fragment implements OnMapReadyCallback, Goo
 
                 Log.i("USERID = ", USER_ID);
 
-                Handler handler = new Handler();
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run(){
-                        // wait for 3.5 seconds
-                        if(USER_ID !="") {
-                            showReport();
-                            requestDirection(USER_ID);
-                            setMarkerAssignUser(USER_ID);
-                        }
-                    }
-                }, 3500);
+                if(USER_ID != ""){
+                    showReport();
+                    requestDirection(USER_ID);
+                    setMarkerAssignUser(USER_ID);
+                }
 
             }
 
@@ -524,13 +532,14 @@ public class MapsActivityEMS extends Fragment implements OnMapReadyCallback, Goo
 
         DatabaseReference userloc = FirebaseDatabase.getInstance().getReference("profiles").child(user_id).child("last_known_location");
 
-        userloc.addValueEventListener(new ValueEventListener() {
+        readData(userloc, new MapsActivity.OnGetDataListener() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
+            public void onSuccess(DataSnapshot dataSnapshot) {
                 Double lat = dataSnapshot.child("latitude").getValue(Double.class);
                 Double lng = dataSnapshot.child("longitude").getValue(Double.class);
 
                 LatLng location = new LatLng(lat, lng);
+
                 destination = location;
 
                 GoogleDirection.withServerKey(serverKey)
@@ -542,7 +551,12 @@ public class MapsActivityEMS extends Fragment implements OnMapReadyCallback, Goo
             }
 
             @Override
-            public void onCancelled(DatabaseError databaseError) {
+            public void onStart() {
+
+            }
+
+            @Override
+            public void onFailure() {
 
             }
         });
@@ -582,13 +596,6 @@ public class MapsActivityEMS extends Fragment implements OnMapReadyCallback, Goo
 
         } else if(direction.getStatus().equals("OVER_QUERY_LIMIT")){
 
-            Handler handler = new Handler();
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-
-                }
-            }, 3000);
 
             Log.i("DIRECTION STATUS = ", "OVER_QUERY_LIMIT");
             Toast.makeText(getContext(), direction.getStatus(), Toast.LENGTH_LONG).show();

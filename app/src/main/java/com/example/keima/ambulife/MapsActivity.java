@@ -90,7 +90,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Google
 
     FirebaseUser user;
 
-    private String serverKey = "AIzaSyBhgkubhJQ5f72-QBgCo_-gEYyTKJlXLrw";
+    private String serverKey = "AIzaSyD4Ba4-1RPO83bgFuWWbnHatfTHvyTNQjM";
     private LatLng origin = new LatLng(0.0, 0.0);
     private LatLng destination = new LatLng(0.0, 0.0);
 
@@ -605,6 +605,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Google
         emsloc.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+
                 Double lat = dataSnapshot.child("latitude").getValue(Double.class);
                 Double lng = dataSnapshot.child("longitude").getValue(Double.class);
 

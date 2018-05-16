@@ -118,6 +118,7 @@ public class IncidentReport extends AppCompatActivity {
                                                         String text = editText.getText().toString().trim();
                                                         String address ="";
 
+
                                                         try {
                                                             List<Address> addressList;
                                                             addressList = geocoder.getFromLocation(location.latitude, location.longitude, 1);
