@@ -52,6 +52,7 @@ public class PictureSharing extends AppCompatActivity {
     EditText editText;
     ProgressDialog progress;
     private static final int CAMERA_REQUEST_CODE = 1;
+//    09269384310
     private static final String EMERGENCY_NUMBER2 = "09269384310"; // (This number is for testing purposes only) This should be the emergency number. (
     private StorageReference Storage;
     Uri PicUri;

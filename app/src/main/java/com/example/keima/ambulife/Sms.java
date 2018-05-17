@@ -6,6 +6,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.location.Address;
+import android.location.Geocoder;
 import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -20,16 +22,21 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.io.IOException;
+import java.util.List;
+
 public class Sms extends AppCompatActivity {
 
     FirebaseUser user;
     final int isSent = 0;
+    Geocoder geocoder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sms);
 
+        geocoder = new Geocoder(getApplicationContext());
 
         user = FirebaseAuth.getInstance().getCurrentUser();
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference("profiles")
@@ -44,12 +51,31 @@ public class Sms extends AppCompatActivity {
                 lng_marker = dataSnapshot.child("longitude").getValue(Double.class);
 
                 // Phone number to send the message
-                String strPhone = "09269384310";
+                String strPhone = "09269384310"; // ron
+
+//                String address = "";
+
+//                String strPhone = "09495945171"; // al
+//                String strPhone = "09426658102"; // john
+
+                // Get the formatted address through geocoding
+//                try {
+//                    List<Address> addressList = geocoder.getFromLocation(lat_marker, lng_marker, 1);
+//                    address = addressList.get(0).getAddressLine(0) +", "
+//                            +addressList.get(0).getSubLocality() + ", "
+//                            +addressList.get(0).getLocality() + ","
+//                            +addressList.get(0).getCountryName();
+//
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+
 
                 // Message Body
-                String strMessage = "Requesting medical help\n"
+                String strMessage = "Requesting medical help!\n"
                         + "User ID: " + user.getUid() + "\n"
-                        + "Longitude and Latitude: " + lng_marker + ", " + lat_marker;
+                        + "\nLatitude and Longitude: " + lat_marker + ", " + lng_marker +"\n"
+                        + "\nEmail: "+ user.getEmail();
 
 
                 try {
@@ -59,7 +85,7 @@ public class Sms extends AppCompatActivity {
                             Toast.LENGTH_LONG).show();
                 } catch (Exception e) {
                     Toast.makeText(getApplicationContext(),
-                            "SMS faild, please try again later!",
+                            "SMS failed, please try again later!",
                             Toast.LENGTH_LONG).show();
                     e.printStackTrace();
                 }

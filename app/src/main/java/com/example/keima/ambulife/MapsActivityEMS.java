@@ -256,8 +256,6 @@ public class MapsActivityEMS extends Fragment implements OnMapReadyCallback, Goo
 
             try {
                 List<Address> addressList = geocoder.getFromLocation(destination.latitude, destination.longitude, 1);
-//                address = addressList.get(0).getSubLocality() + ", " + addressList.get(0).getLocality() + ",";
-//                address += addressList.get(0).getCountryName();
 
                 address = addressList.get(0).getAddressLine(0);;
             } catch (IOException e) {
@@ -314,8 +312,7 @@ public class MapsActivityEMS extends Fragment implements OnMapReadyCallback, Goo
 
             try {
                 List<Address> addressList = geocoder.getFromLocation(location.latitude, location.longitude, 1);
-                address = addressList.get(0).getSubLocality() + ", " + addressList.get(0).getLocality() + ",";
-                address += addressList.get(0).getCountryName();
+                address = addressList.get(0).getAddressLine(0);
 
                 updateLocationOnDatabase(locationReference, location);
             } catch (IOException e) {
@@ -539,8 +536,7 @@ public class MapsActivityEMS extends Fragment implements OnMapReadyCallback, Goo
                 if (!assignUserMarkers.containsKey(key)) { // If location is not saved yet. Get location update and set marker
                     try {
                         List<Address> addressList = geocoder.getFromLocation(location.latitude, location.longitude, 1);
-                        address = addressList.get(0).getSubLocality() + ", " + addressList.get(0).getLocality() + ",";
-                        address += addressList.get(0).getCountryName();
+                        address = addressList.get(0).getAddressLine(0);
 
                     } catch (IOException e) {
                         e.printStackTrace();

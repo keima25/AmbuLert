@@ -279,8 +279,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Google
         if (!mMarkers.containsKey(key)) { // If location is not saved yet. Get location update and set marker
             try {
                 List<Address> addressList = geocoder.getFromLocation(location.latitude, location.longitude, 1);
-                address = addressList.get(0).getSubLocality() + ", " + addressList.get(0).getLocality() + ",";
-                address += addressList.get(0).getCountryName();
+                address = addressList.get(0).getAddressLine(0);
 
                 updateLocationOnDatabase(locationReference, location);
             } catch (IOException e) {
@@ -360,7 +359,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Google
 
                         try {
                             addressList = geocoder.getFromLocation(location.latitude, location.longitude, 1);
-                            address = "Location: " + location + "\n" + addressList.get(0).getSubLocality() + ", " + addressList.get(0).getSubLocality();
+                            address = "Location: " + location + "\n" + addressList.get(0).getAddressLine(0);
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -416,7 +415,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Google
                 if (!assignEmsMarkers.containsKey(key)) { // If location is not saved yet. Get location update and set marker
                     try {
                         List<Address> addressList = geocoder.getFromLocation(location.latitude, location.longitude, 1);
-                        address = addressList.get(0).getSubLocality() + ", " + addressList.get(0).getLocality() + ",";
+                        address = addressList.get(0).getAddressLine(0);
                         address += addressList.get(0).getCountryName();
 
                     } catch (IOException e) {
