@@ -13,31 +13,40 @@
         android:layout_marginBottom="76dp"
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
+        android:background="@color/colorBackground"
+        android:onClick="Start"
         android:text="Start"
+        android:textColor="@color/colorWhite"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/connect"
-        android:onClick="Start" />
+        app:layout_constraintEnd_toStartOf="@+id/connect" />
 
     <Button
         android:id="@+id/connect"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="28dp"
+        android:background="@color/colorBackground"
+        android:onClick="Connect"
         android:text="Connect"
+        android:textColor="@color/colorWhite"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/videoFrame"
-        android:onClick="Connect" />
+        app:layout_constraintTop_toBottomOf="@+id/videoFrame" />
 
     <Button
         android:id="@+id/disconnect"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="76dp"
+        android:layout_marginStart="20dp"
+        android:background="@color/colorBackground"
+        android:onClick="Disconnect"
+        android:padding="5dp"
         android:text="Disconnect"
+        android:textColor="@color/colorWhite"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/connect"
-        android:onClick="Disconnect" />
+        android:layout_marginLeft="20dp" />
 
     <FrameLayout
         android:id="@+id/videoFrame"
@@ -48,6 +57,7 @@
         android:layout_marginRight="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
+        android:keepScreenOn="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">

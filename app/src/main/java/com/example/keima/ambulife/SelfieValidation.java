@@ -78,6 +78,7 @@ public class SelfieValidation extends AppCompatActivity {
         verificationScreen = (LinearLayout) findViewById(R.id.verificationScreen);
 
         progressDialog = new ProgressDialog(this);
+        progressDialog.setCancelable(false);
 
         FirebaseUser current_user = FirebaseAuth.getInstance().getCurrentUser();
 

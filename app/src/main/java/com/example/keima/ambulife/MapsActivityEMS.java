@@ -77,18 +77,23 @@ public class MapsActivityEMS extends Fragment implements OnMapReadyCallback, Goo
     private int start = 0;
     private int queryCount = 0;
 
-    boolean dispatch = false;
-    boolean respond = false;
+    boolean dispatch = true;
+    boolean isTheSameUser = false;
     String USER_ID = "";
     FloatingActionButton fabMyLocationCamera, fabMyLocationInfo, fabReport;
     TextView etaTextView, distanceTextView;
 
     FirebaseUser user;
 
+//    private String serverKey = "AIzaSyB6iBcJYc1r5PR_331MDWoBci7MRtQ7El4 ";
     private String serverKey = "AIzaSyBFOWoDbj5nMYzO1VUmPwVQZCeRgB5m4Ik";
     private LatLng origin = new LatLng(0.0, 0.0);
     private LatLng destination = new LatLng(0.0, 0.0);
     private LatLng origin2 = new LatLng(0.0, 0.0);
+
+    // This is for testing only
+    LatLng origin1 = new LatLng(7.0909789, 125.606837);
+    LatLng destination1 = new LatLng(7.0831552, 125.6181341);
 
     // Firebase User
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
@@ -130,10 +135,8 @@ public class MapsActivityEMS extends Fragment implements OnMapReadyCallback, Goo
 
         statusCheck();
 
-//        LatLng origin1, destination1;
-//
-//        origin1 = new LatLng();
-//        destination1 = new LatLng();
+//        origin1 = new LatLng(7.0909789, 125.606837);
+//        destination1 = new LatLng(7.0831552, 125.6181341);
 //
 //
 //        GoogleDirection.withServerKey(serverKey)
@@ -143,7 +146,7 @@ public class MapsActivityEMS extends Fragment implements OnMapReadyCallback, Goo
 //                .transportMode(TransportMode.DRIVING)
 //                .execute(MapsActivityEMS.this);
 
-//        Toast.makeText(getContext(), "EMS MAP", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getContext(), "EMS MAP", Toast.LENGTH_SHORT).show();
 
         // Initialize the map
         Log.d(TAG, "initMap: initializing map");
@@ -231,10 +234,12 @@ public class MapsActivityEMS extends Fragment implements OnMapReadyCallback, Goo
                 Log.i("USERID = ", USER_ID);
 
                 if(USER_ID != ""){
-                    showReport();
                     requestDirection(USER_ID);
                     setMarkerAssignUser(USER_ID);
+                    showReport();
+
                 }
+
 
             }
 
@@ -243,6 +248,36 @@ public class MapsActivityEMS extends Fragment implements OnMapReadyCallback, Goo
 
             }
         });
+    }
+
+    private void showAlertDialog(){
+        if(dispatch){
+            String address ="";
+
+            try {
+                List<Address> addressList = geocoder.getFromLocation(destination.latitude, destination.longitude, 1);
+//                address = addressList.get(0).getSubLocality() + ", " + addressList.get(0).getLocality() + ",";
+//                address += addressList.get(0).getCountryName();
+
+                address = addressList.get(0).getAddressLine(0);;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+            builder.setMessage("ATTENTION!\n You have been assigned to an emergency! Check the map for the location:\n" + address)
+                    .setCancelable(false)
+                    .setPositiveButton("Respond", new DialogInterface.OnClickListener() {
+                        public void onClick(final DialogInterface dialog, final int id) {
+                            isTheSameUser = true;
+                            dispatch = false;
+                        }
+                    });
+            final AlertDialog alert = builder.create();
+            alert.show();
+        }
+
+        dispatch = false;
     }
 
     private void showReport(){
@@ -436,8 +471,11 @@ public class MapsActivityEMS extends Fragment implements OnMapReadyCallback, Goo
                             if(id.equals(currentUser.getUid())){
                                 Log.i("Status: ", "Dispatch");
                                 USER_ID = dataSnapshot.child("user").child("id").getValue(String.class);
-                                dispatch = true;
 //                                Toast.makeText(getContext(), "DANGER", Toast.LENGTH_SHORT).show();
+
+                                if(!(USER_ID != null && USER_ID.isEmpty()) && USER_ID.equals(dataSnapshot.child("user").child("id").getValue(String.class))){
+                                    isTheSameUser = true;
+                                }
 
                                 Double lat, lng;
                                 lat = dataSnapshot.child("user").child("location").child("latitude").getValue(Double.class);
@@ -529,6 +567,7 @@ public class MapsActivityEMS extends Fragment implements OnMapReadyCallback, Goo
     }
 
     private void requestDirection(String user_id) {
+        Log.i("STATUS:", "DIRECTION REQUESTED");
 
         DatabaseReference userloc = FirebaseDatabase.getInstance().getReference("profiles").child(user_id).child("last_known_location");
 
@@ -548,6 +587,10 @@ public class MapsActivityEMS extends Fragment implements OnMapReadyCallback, Goo
                         .unit(Unit.METRIC)
                         .transportMode(TransportMode.DRIVING)
                         .execute(MapsActivityEMS.this);
+
+                if(destination != new LatLng(0,0) ){
+                    showAlertDialog();
+                }
             }
 
             @Override

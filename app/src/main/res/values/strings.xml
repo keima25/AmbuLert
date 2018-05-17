@@ -24,6 +24,7 @@
 
     <string name="nav_name"></string>
     <string name="nav_email"></string>
+    <string name="videotoken">cHJvdmlzaW9uAHVzZXIxQDMyMGVkMy52aWR5by5pbwA2MzY5MzY5NjQxMgAAZjIyYWNmNmQwMDE2MDQ0MjIwZmU3YjcwNDdiZTZjYThhYjM1ZDcxMGYxNzM0MDQyMDYxZDViZDVlY2M3NDIxOTQ5ODk1MzI4ZGI0YjMwMzAyMzM2M2VkM2E1NTNmNGU3</string>
 
     <string name="next_step_validation">
         \t Take a photo of yourself together with one of your valid ID\'s.

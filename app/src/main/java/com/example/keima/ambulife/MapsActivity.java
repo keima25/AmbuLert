@@ -133,6 +133,19 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Google
 
         statusCheck();
 
+//        LatLng origin1, destination1;
+//
+//        origin1 = new LatLng(7.0909789, 125.606837);
+//        destination1 = new LatLng(7.0831552, 125.6181341);
+//
+//
+//        GoogleDirection.withServerKey(serverKey)
+//                .from(origin1)
+//                .to(destination1)
+//                .unit(Unit.METRIC)
+//                .transportMode(TransportMode.DRIVING)
+//                .execute(MapsActivity.this);
+
         // Initialize the map
         Log.d(TAG, "initMap: initializing map");
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
@@ -230,18 +243,10 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback, Google
                 //Toast.makeText(mapInterface, EMS_ID, Toast.LENGTH_SHORT).show();
                 Log.i("EMSID = ", EMS_ID);
 
-                Handler handler = new Handler();
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run(){
-                        // wait for 5 seconds
-                        if(EMS_ID !="") {
-                            requestDirection(EMS_ID);
-                            setMarkerAssignEms(EMS_ID);
-                        }
-                    }
-                }, 2000);
-
+                if(EMS_ID !="") {
+                  requestDirection(EMS_ID);
+                    setMarkerAssignEms(EMS_ID);
+                }
 
             }
 
