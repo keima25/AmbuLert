@@ -6,10 +6,12 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
 import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
 import android.support.transition.Fade;
 import android.support.transition.Transition;
 import android.support.transition.TransitionManager;
@@ -191,9 +193,10 @@ public class SelfieValidation extends AppCompatActivity {
                                         ,Toast.LENGTH_LONG).show();
 
                                 profile.child("status").addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
                                     @Override
                                     public void onDataChange(DataSnapshot dataSnapshot) {
-                                        if(dataSnapshot.child("status").getValue(String.class).equals("Pending")){
+                                        if(Objects.equals(dataSnapshot.child("status").getValue(String.class), "Pending")){
                                             progressDialog.dismiss();
                                             Toast.makeText(SelfieValidation.this, "Thank you. Please wait for 5 minutes for us to validate your account.", Toast.LENGTH_SHORT).show();
                                             Log.i("Status: ", "Pending");

@@ -20,7 +20,7 @@
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="60dp"
-            android:text="AmbuLert"
+            android:text="EyeSeeWang"
             android:textColor="@color/colorWhite"
             android:textSize="30sp" />
 

@@ -202,7 +202,6 @@ public class MapInterface extends AppCompatActivity implements NavigationView.On
 
         });
     }
-    // // // // //
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -241,9 +240,7 @@ public class MapInterface extends AppCompatActivity implements NavigationView.On
             Intent i = new Intent(this, MyProfile.class);
             startActivity(i);
 //            finish();
-        } else if (menuId == R.id.nav_settings) {
-//            Toast.makeText(this.getApplicationContext(), "You clicked Settings", Toast.LENGTH_SHORT).show();
-        } else if (menuId == R.id.nav_logout) {
+        }else if (menuId == R.id.nav_logout) {
             signOutUser();
         }
 
@@ -353,13 +350,7 @@ public class MapInterface extends AppCompatActivity implements NavigationView.On
                 .setPositiveButton("Exit", new DialogInterface.OnClickListener() {
                     public void onClick(final DialogInterface dialog, final int id) {
                         getFragmentManager().popBackStack(null, android.app.FragmentManager.POP_BACK_STACK_INCLUSIVE);
-//                        Fragment fragment = null;
-//
-//                        FragmentManager fm = getSupportFragmentManager();
-//                        FragmentTransaction ft = fm.beginTransaction();
-//
-//                        ft.replace(R.id.screen_area, fragment);
-//                        ft.commit();
+
 
                         stopService(new Intent(MapInterface.this, TrackerService.class));
                         finish();

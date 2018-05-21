@@ -92,8 +92,8 @@ public class MapsActivityEMS extends Fragment implements OnMapReadyCallback, Goo
     private LatLng origin2 = new LatLng(0.0, 0.0);
 
     // This is for testing only
-    LatLng origin1 = new LatLng(7.0909789, 125.606837);
-    LatLng destination1 = new LatLng(7.0831552, 125.6181341);
+//    LatLng origin1 = new LatLng(7.0909789, 125.606837);
+//    LatLng destination1 = new LatLng(7.0831552, 125.6181341);
 
     // Firebase User
     FirebaseAuth mAuth = FirebaseAuth.getInstance();

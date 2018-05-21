@@ -72,7 +72,7 @@ public class MyProfile extends AppCompatActivity implements NavigationView.OnNav
         // View Declarations
         closeBtn = findViewById(R.id.closeButton);
 
-        profileImageView = findViewById(R.id.profile_imageView);
+//        profileImageView = findViewById(R.id.profile_imageView);
         emailView = findViewById(R.id.profile_emailAddress);
         nameView = findViewById(R.id.profile_name);
         homeaddressView = findViewById(R.id.profile_homeAddress);

@@ -15,18 +15,18 @@
         android:background="@drawable/side_nav_bar"
         android:orientation="vertical">
 
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
+        <!--<FrameLayout-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="match_parent">-->
 
-            <ImageView
-                android:id="@+id/profile_imageView"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_gravity="center"
-                android:layout_marginBottom="20dp"
-                android:elevation="@null"
-                android:src="@mipmap/profile_icon" />
+            <!--<ImageView-->
+                <!--android:id="@+id/profile_imageView"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="match_parent"-->
+                <!--android:layout_gravity="center"-->
+                <!--android:layout_marginBottom="20dp"-->
+                <!--android:elevation="@null"-->
+                <!--android:src="@mipmap/profile_icon" />-->
 
             <ImageView
                 android:id="@+id/closeButton"
@@ -40,7 +40,7 @@
                 android:scaleY="1.5"
                 android:src="@mipmap/ic_clear_white_24dp" />
 
-        </FrameLayout>
+        <!--</FrameLayout>-->
 
 
 
@@ -50,7 +50,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="5dp"
-            android:layout_marginTop="5dp"
+            android:layout_marginTop="70dp"
             android:text="Email"
             android:textAlignment="center"
             android:textAllCaps="true"
