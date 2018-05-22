@@ -28,10 +28,12 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Layout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -103,6 +105,7 @@ public class MapInterface extends AppCompatActivity implements NavigationView.On
         mToggle.syncState();
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setTitle(null);
 
         nav_view.setNavigationItemSelectedListener(this);
 
@@ -131,7 +134,10 @@ public class MapInterface extends AppCompatActivity implements NavigationView.On
         pd.setMessage("Loading");
         pd.show();
 
+        // Initialize current user
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+
         DatabaseReference typeRef = FirebaseDatabase.getInstance().getReference("profiles").child(user.getUid()).child("type");
 
         readData(typeRef, new OnGetDataListener() {

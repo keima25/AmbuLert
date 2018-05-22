@@ -53,7 +53,7 @@
             android:layout_marginTop="70dp"
             android:text="Email"
             android:textAlignment="center"
-            android:textAllCaps="true"
+            android:textAllCaps="false"
             android:textColor="@color/colorWhite"
             android:textStyle="bold" />
 

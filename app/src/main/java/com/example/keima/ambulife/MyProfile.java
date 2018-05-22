@@ -99,13 +99,13 @@ public class MyProfile extends AppCompatActivity implements NavigationView.OnNav
         displayProfile();
 
         // EDIT PROFILE FUNCTIONS
-        profileImageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getApplicationContext(), CameraActivity.class);
-                startActivity(intent);
-            }
-        });
+//        profileImageView.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Intent intent = new Intent(getApplicationContext(), CameraActivity.class);
+//                startActivity(intent);
+//            }
+//        });
 
         imageView_edit_name.setOnClickListener(new View.OnClickListener() {
             @Override
